@@ -62,13 +62,13 @@ INSERT INTO Dozent (PersId, Name, Fach)
 VALUES (4001, 'Schwab-Trapp', 'Mediengestaltung');
 
 INSERT INTO Dozent 
-VALUES (4711, 'Dahm', 'Informatik', "4.2.10");
+VALUES (4711, 'Dahm', 'Informatik', '4.2.10'); -- Fehler: falsche Anführungszeichen "..."  Abhilfe: richtige Anführungszeichen einsetzen '...'
 
 INSERT INTO Dozent 
 VALUES (4712, 'Rakow', 'Informatik', '4.2.39');
 
 INSERT INTO Dozent 
-VALUES (4712, 'Geiger', 'Informatik', '4.2.05');
+VALUES (4713, 'Geiger', 'Informatik', '4.2.05'); -- FEHLER: Integritätsbedingung für den Primärschlüssel wurde verletzt.      -- ABHILFE: Korrekter Wert für Primärschlüssel verwendet.
 
 INSERT INTO Dozent 
 VALUES (4714, 'Asal',  'Audiovisuelle Medien', '4.3.09');
