@@ -1,25 +1,25 @@
 SET ECHO ON
 
 /* DBS2: Beispiel Blatt01 mit Fehlern */
-/* Autor: Thomas Rakow, HS D�sseldorf */
+/* Autor: Thomas Rakow, HS Düsseldorf */
 
 /* Verwendete Namenskonvention:
- *  Es werden aussagekraeftige und m�glichst spezifische Bezeichner gew�hlt, 
+ *  Es werden aussagekraeftige und möglichst spezifische Bezeichner gewählt, 
  *  so wird das gebraeuchlicher Kurs statt kurs verwendet um die Lesbarkeit zu erhoehen und 
  *  einen besseren Bezug zur Fachlichkeit herzustellen. 
 */
 
 /* Korrekturen der Fehler wie im folgenden Beispiel direkt unterhalb der 
-   ge�nderten Stelle vermerken: */
--- FEHLER: Integrit�tsbedingung f�r den Prim�rschl�ssel wurde verletzt.
--- ABHILFE: Korrekter Wert f�r Prim�rschl�ssel verwendet.
+   geänderten Stelle vermerken: */
+-- FEHLER: Integritätsbedingung für den Primärschlüssel wurde verletzt.
+-- ABHILFE: Korrekter Wert für Primärschlüssel verwendet.
 
 /* ======================================================== */
 /* Schema aufbauen */
 /* Voraussetzung: Rechte zum DROP & CREATE sind vorhanden */
 
   
-/* Altes Schema ggf. l�schen */
+/* Altes Schema ggf. löschen */
 DROP TABLE Dozent;
 DROP TABLE Kurs;
 DROP TABLE Student;
@@ -53,8 +53,8 @@ CREATE TABLE Student (
 COMMIT;
 
 /* ======================================================== */
-/* Daten einf�gen */
-/* Vorhandene Daten werden nicht gel�scht oder �berschrieben!*/
+/* Daten einfügen */
+/* Vorhandene Daten werden nicht gelöscht oder überschrieben!*/
 INSERT INTO Dozent 
 VALUES (3450, 'Doerries', 'Mathematik', '4.2.38');
 
