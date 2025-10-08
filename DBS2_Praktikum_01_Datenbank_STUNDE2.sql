@@ -55,15 +55,17 @@ COMMIT;
 /* ======================================================== */
 /* Daten einfügen */
 /* Vorhandene Daten werden nicht gelöscht oder überschrieben!*/
+
+--Dozent einfügen
+
 INSERT INTO Dozent 
 VALUES (3450, 'Doerries', 'Mathematik', '4.2.38');
 
+-- FEHLER: Name hatte mehr als 10 Zeichen        ABHILFE: Name kürzen oder größeres VARCHAR() für Name benutzen 
 ALTER TABLE Dozent MODIFY Name VARCHAR2(20);
 
 INSERT INTO Dozent (PersId, Name, Fach)
 VALUES (4001, 'Schwab-Trapp', 'Mediengestaltung');
-
-
 
 INSERT INTO Dozent 
 VALUES (4711, 'Dahm', 'Informatik', '4.2.10'); -- FEHLER: falsche Anführungszeichen "..."  ABHILFE: richtige Anführungszeichen einsetzen '...'
@@ -77,6 +79,8 @@ VALUES (4713, 'Geiger', 'Informatik', '4.2.05'); -- FEHLER: Integritätsbedingun
 INSERT INTO Dozent 
 VALUES (4714, 'Asal',  'Audiovisuelle Medien', '4.3.09');
 
+-- Kurs einfügen
+
 INSERT INTO Kurs 
 VALUES (100, 'Mathematik 2', 7, 3450);
 
@@ -84,16 +88,20 @@ INSERT INTO Kurs
 VALUES (115, 'Mediengestaltung 2', 6, 4001);
 
 INSERT INTO Kurs 
-VALUES (106, 'Objektorientiertes Programmieren 2', 8, 47111);
+VALUES (106, 'Objektorientiertes Programmieren 2', 8, 4711); -- FEHLER: PersID hat 5 Ziffern, aber es sind maximal nur 4 erlaubt      ABHILFE: letzte Ziffer weglassen
 
 INSERT INTO Kurs 
 VALUES (111, 'Datenbanksysteme 2', 7, 4712);
 
-INSERT INTO Kurs 
+/**
+INSERT INTO Kurs     -- wurde schon hinzugefügt
 VALUES (115, 'Mediengestaltung 2', 6, 4001);
+**/
 
 INSERT INTO Kurs 
 VALUES (104, 'FMA', 5, 4713);
+
+--Student einfügen
 
 INSERT INTO Student (MatrNr, Name, Semester) 
 VALUES (24002, 'Xenokrates', 18); 
@@ -111,7 +119,7 @@ INSERT INTO Student (MatrNr, Name, Semester)
 VALUES (28106, 'Carnap', 3); 
  
 INSERT INTO Student (MatrNr, Name, Semester) 
-VALUES (29120, 'Theophrastos'); 
+VALUES (29120, 'Theophrastos', 9); -- FEHLER: ein Wert hat gefehlt    ABHILFE: fehlenden Wert einfügen/ergänzen 
  
 INSERT INTO Student (MatrNr, Name, Semester) 
 VALUES (29555, 'Feuerbach', 2);
