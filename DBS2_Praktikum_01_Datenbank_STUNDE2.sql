@@ -231,6 +231,18 @@ WHERE d.DozentName = 'Rakow';
 
 /* ================================================== */
 /* Aufgabe 6 */
+/* Geben Sie diejenigen Kurse aus, deren Deputat höher oder gleich ist wie der 
+Durchschnitt aller Kurse, absteigend sortiert nach Deputat.  Optional: Finden Sie eine Variante der Anweisung ohne Verwendung einer 
+Subquery.
+*/
+
+SELECT *
+FROM Kurs
+WHERE Deputat >= ( 
+    SELECT AVG(Deputat) --Durchschnitt
+    FROM Kurs
+)
+ORDER BY Deputat DESC; --absteigend sortiert 
 
 
 /* Ende des Skripts */
