@@ -206,6 +206,28 @@ HAVING
 
 /* ================================================== */
 /* Aufgabe 5 */
+/* Geben Sie alle Kurse aus, deren Deputat (irgend-) einer Vorlesung des Dozen-
+ten ‚Rakow’ entspricht. Geben Sie zwei Varianten an, einmal mit Verwendung 
+des IN-Operators, einmal ohne eine Subquery.
+*/
+
+-- Mit IN-Operator
+SELECT *
+FROM Kurs
+WHERE Deputat IN (
+    SELECT k2.Deputat
+    FROM Kurs k2
+    JOIN Dozent d ON k2.PersId = d.PersId -- verbindet die Kurse mit denselben Dozent 
+    WHERE d.DozentName = 'Rakow'
+);
+
+-- Ohne eine Subquery
+SELECT k1.*
+FROM Kurs k1
+JOIN Kurs k2 ON k1.Deputat = k2.Deputat   -- Kurse, die denselben Deputat haben
+JOIN Dozent d ON k2.PersId = d.PersId     -- verbindet die Kurse mit denselben Dozent 
+WHERE d.DozentName = 'Rakow';
+
 
 /* ================================================== */
 /* Aufgabe 6 */
