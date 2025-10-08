@@ -166,19 +166,42 @@ RENAME CONSTRAINT KursPersIDFK TO Kurs_Dozent_FK;
 
 /* ======================================================== */
 /* Aufgabe 3 */
-SELECT MIN(SEMESTER) 
-FROM STUDENT;
+/* Geben Sie die Studenten mit der niedrigsten Semesterzahl aus. */
+SELECT MIN(Semester) 
+FROM Student;
 
 SELECT *
-FROM STUDENT
-WHERE SEMESTER = (
+FROM Student
+WHERE Semester = (
        SELECT MIN(Semester)
-       FROM STUDENT
+       FROM Student
 );
 
 /* ================================================== */
 /* Aufgabe 4 */
+/* Machen Sie sich mit dem Begriff Lehrdeputat vertraut. Geben Sie PersID, Na-
+men und Gesamtdeputat derjenigen Professoren aus, die ein Gesamtdeputat 
+höher als 7 besitzen und ihr Büro in der 2ten Etage haben (bei der Raumbe-
+zeichnung 1.2.3 gibt die zweite Stelle die Etage an). 
 
+Lehrdeputat = das Arbeitspensum in der Lehre, gemessen in Semesterwochenstunden (SWS) - verpflichtete Anzahl an Lehrstunden
+
+*/
+
+SELECT 
+    d.PersId,
+    d.DozentName,
+    SUM(k.Deputat) AS Gesamtdeputat -- Gesamtdeputat also alles insgesamt summieren oder soll nur Deputat angegeben werden? 
+FROM 
+    Dozent d
+JOIN 
+    Kurs k ON d.PersId = k.PersId 
+WHERE 
+    d.Buero LIKE '%.2.%'   -- Büro in der 2. Etage
+GROUP BY 
+    d.PersId, d.DozentName -- gruppiert nach Dozent, wenn das verlangt war
+HAVING 
+    SUM(k.Deputat) > 7; -- Gesamtdeputat soll größer als 7 sein 
 
 
 /* ================================================== */
