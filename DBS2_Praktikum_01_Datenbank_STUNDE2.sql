@@ -33,10 +33,10 @@ CREATE TABLE Dozent (
 );
 
 CREATE TABLE Kurs (
-       KursNr NUMBER(3) CONSTRAINT Kurs_PK PRIMARY KEY, -- Fehler: KursNr doppelt angegeben   Abhilfe: (KursNr) welassen
-	   Name VARCHAR2(40) NOT NULL, -- Fehler: Komma vor dem NOT NULL      Abhilfe: Komma wegmachen 
-	   Deputat NUMBER(2), 
-	   PersId	NUMBER(4));
+       KursNr        NUMBER(3) CONSTRAINT Kurs_PK PRIMARY KEY, -- Fehler: KursNr doppelt angegeben   Abhilfe: (KursNr) welassen
+       Name          VARCHAR2(40) NOT NULL, -- Fehler: Komma vor dem NOT NULL      Abhilfe: Komma wegmachen 
+       Deputat       NUMBER(2), 
+       PersId	       NUMBER(4));
 
 ALTER TABLE Kurs
 ADD CONSTRAINT KursPersIDFK
@@ -44,9 +44,9 @@ ADD CONSTRAINT KursPersIDFK
 ;
 
 CREATE TABLE Student (
-       MatrNr	NUMBER (5),
-       Name		VARCHAR2 (20) NOT NULL,
-       Semester	NUMBER (2),
+       MatrNr	       NUMBER (5),
+       Name	       VARCHAR2 (20) NOT NULL,
+       Semester      NUMBER (2),
        CONSTRAINT StudentPK PRIMARY KEY (MatrNr)
 );
 
@@ -125,7 +125,7 @@ INSERT INTO Student (MatrNr, Name, Semester)
 VALUES (29555, 'Feuerbach', 2);
 
 -- Daten persistent in die Datenbank einfuegen
--- ROLLBACK; FEHLER
+-- ROLLBACK;  FEHLER: Macht Änderungen rückgängig, aber wir wollen es speichern 
 Commit;
 
 /* ======================================================== */
@@ -137,8 +137,36 @@ SELECT * FROM Student ORDER BY MatrNr;
 
 
 /* ======================================================== */
+/* Aufgabe 2 */
+/* Welche Regeln für die Namensgebung (Namenskonvention) wurden umge-
+setzt, welche nicht? Fügen Sie die Antwort in die SQL-Datei ein. 
+
+1. Tabellen Name im Singular
+2. "Name" kommt in allen drei Tabellen vor -> zu unspezifisch, besser wäre DozentName, KursName, StudentName
+3. Constraint-Namen uneinheitlich, z.B. in Zeile 50 -> besser wäre Student_PK und in Zeile 42 -> besser wäre Kurs_Dozent_FK
+4. Datentyp korrekt verwendet
+5. einheitliche Schreibweise ohne Umlaute oder Sonderzeichen
+*/
+
+ALTER TABLE Dozent
+RENAME COLUMN Name TO DozentName;
+
+ALTER TABLE Kurs
+RENAME COLUMN Name TO KursName;
+
+ALTER TABLE Student
+RENAME COLUMN Name TO StudentName;
+
+ALTER TABLE Student
+RENAME CONSTRAINT StudentPK TO Student_PK;
+
+ALTER TABLE Kurs
+RENAME CONSTRAINT KursPersIDFK TO Kurs_Dozent_FK;
+
+
 /* ======================================================== */
 /* Aufgabe 3 */
+
 
 /* ================================================== */
 /* Aufgabe 4 */
