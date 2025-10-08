@@ -19,10 +19,10 @@ SET ECHO ON
 /* Voraussetzung: Rechte zum DROP & CREATE sind vorhanden */
 
   
-/* Altes Schema ggf. löschen */
+/* Altes Schema ggf. löschen*/
 DROP TABLE Dozent;
 DROP TABLE Kurs;
-DROP TABLE Student;
+DROP TABLE Student; 
 
 CREATE TABLE Dozent (
        PersId		NUMBER (4), 
@@ -62,7 +62,7 @@ INSERT INTO Dozent (PersId, Name, Fach)
 VALUES (4001, 'Schwab-Trapp', 'Mediengestaltung');
 
 INSERT INTO Dozent 
-VALUES (4711, 'Dahm', 'Informatik', '4.2.10'); -- Fehler: falsche Anführungszeichen "..."  Abhilfe: richtige Anführungszeichen einsetzen '...'
+VALUES (4711, 'Dahm', 'Informatik', '4.2.10'); -- FEHLER: falsche Anführungszeichen "..."  ABHILFE: richtige Anführungszeichen einsetzen '...'
 
 INSERT INTO Dozent 
 VALUES (4712, 'Rakow', 'Informatik', '4.2.39');
@@ -113,7 +113,8 @@ INSERT INTO Student (MatrNr, Name, Semester)
 VALUES (29555, 'Feuerbach', 2);
 
 -- Daten persistent in die Datenbank einfuegen
-ROLLBACK;
+-- ROLLBACK; FEHLER
+Commit;
 
 /* ======================================================== */
 /* Daten aller Relationen ausgeben*/
