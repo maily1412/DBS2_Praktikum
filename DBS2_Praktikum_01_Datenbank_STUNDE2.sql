@@ -58,8 +58,12 @@ COMMIT;
 INSERT INTO Dozent 
 VALUES (3450, 'Doerries', 'Mathematik', '4.2.38');
 
+ALTER TABLE Dozent MODIFY Name VARCHAR2(20);
+
 INSERT INTO Dozent (PersId, Name, Fach)
 VALUES (4001, 'Schwab-Trapp', 'Mediengestaltung');
+
+
 
 INSERT INTO Dozent 
 VALUES (4711, 'Dahm', 'Informatik', '4.2.10'); -- FEHLER: falsche Anführungszeichen "..."  ABHILFE: richtige Anführungszeichen einsetzen '...'
