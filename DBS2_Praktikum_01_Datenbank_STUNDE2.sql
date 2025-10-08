@@ -166,7 +166,15 @@ RENAME CONSTRAINT KursPersIDFK TO Kurs_Dozent_FK;
 
 /* ======================================================== */
 /* Aufgabe 3 */
+SELECT MIN(SEMESTER) 
+FROM STUDENT;
 
+SELECT *
+FROM STUDENT
+WHERE SEMESTER = (
+       SELECT MIN(Semester)
+       FROM STUDENT
+);
 
 /* ================================================== */
 /* Aufgabe 4 */
