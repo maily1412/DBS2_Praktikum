@@ -124,3 +124,14 @@ SELECT * FROM Lebensmittel;
 SELECT * FROM Haushaltsware;
 SELECT * FROM Bild;
 SELECT * FROM Katalog_Artikel;
+
+CREATE OR REPLACE VIEW Artikel_View AS
+SELECT 
+    artikelnummer,
+    bezeichnung,
+    TO_CHAR(preis, 'FM9990.00') AS preis_formatiert,
+    beschreibung
+FROM Artikel;
+
+SELECT * FROM Artikel_View;
+
