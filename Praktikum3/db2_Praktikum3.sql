@@ -125,6 +125,7 @@ SELECT * FROM Haushaltsware;
 SELECT * FROM Bild;
 SELECT * FROM Katalog_Artikel;
 
+-- Formatierung für 0.99 Euro
 CREATE OR REPLACE VIEW Artikel_View AS
 SELECT 
     artikelnummer,
