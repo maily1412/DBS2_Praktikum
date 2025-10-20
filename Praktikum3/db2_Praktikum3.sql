@@ -9,16 +9,16 @@ DROP TABLE Lieferservice ;
 -- Tabellen neu anlegen
 
 CREATE TABLE Lieferservice (
-    service_id     NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY,
-    service_name   VARCHAR2(100) NOT NULL,
+    service_id     NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY, -- automatisch fortlaufend
+    service_name   VARCHAR2(100) NOT NULL, -- Pflichtfeld
     adresse        VARCHAR2(255)
 );
 
 CREATE TABLE Katalog (
-    katalog_id     NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY,
-    katalog_name   VARCHAR2(100) NOT NULL,
-    katalog_service_id     NUMBER,
-    CONSTRAINT fk_katalog_lieferservice FOREIGN KEY (katalog_service_id) REFERENCES Lieferservice(service_id)
+    katalog_id          NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY, -- automatisch fortlaufend
+    katalog_name        VARCHAR2(100) NOT NULL, -- Pflichtfeld
+    katalog_service_id  NUMBER,
+    CONSTRAINT fk_katalog_lieferservice FOREIGN KEY (katalog_service_id) REFERENCES Lieferservice(service_id) -- FK verknüpft Katalog mit Lieferservice
 );
 
 CREATE TABLE Artikel (
@@ -29,11 +29,12 @@ CREATE TABLE Artikel (
 );
 
 CREATE TABLE Lebensmittel (
-    artikelnummer  NUMBER PRIMARY KEY,
-    gewicht        NUMBER(10,2),
+    artikelnummer   NUMBER PRIMARY KEY,
+    gewicht         NUMBER(10,2),
     zusammensetzung CLOB,
     CONSTRAINT fk_lebensmittel_artikel FOREIGN KEY (artikelnummer) REFERENCES Artikel(artikelnummer) ON DELETE CASCADE
 );
+
 
 CREATE TABLE Haushaltsware (
     artikelnummer  NUMBER PRIMARY KEY,
