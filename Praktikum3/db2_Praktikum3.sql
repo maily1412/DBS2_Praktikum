@@ -129,7 +129,7 @@ CREATE OR REPLACE VIEW Artikel_View AS
 SELECT 
     artikelnummer,
     bezeichnung,
-    TO_CHAR(preis, 'FM9990.00') AS preis_formatiert,
+    TO_CHAR(preis, 'FM9990.00') AS preis,
     beschreibung
 FROM Artikel;
 
