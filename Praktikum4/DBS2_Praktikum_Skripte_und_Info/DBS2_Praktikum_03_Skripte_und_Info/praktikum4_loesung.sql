@@ -76,13 +76,13 @@ BEGIN
 
   -- Ergebnis der Modulo Rechnung soll von 98 abgezogen werden und wenn es gleich der Prüfziffer ist, ist es gültig
   IF pruefziffer =  98 - MOD(zahl, 97) then 
-  return 'Gültig';
+  return 'OK';
   ELSE 
-  return 'Ungültig';
+  return 'Invalid';
   END IF;
 END;
 /
-SELECT s.employee_id, e.FIRST_NAME, e.LAST_NAME, s.iban, e.salary, ist_iban_gueltig(s.iban) AS iban_gueltig
+SELECT s.employee_id, e.FIRST_NAME, e.LAST_NAME, s.iban, e.salary, ist_iban_gueltig(s.iban) AS is_valid
 FROM emp_account s 
 JOIN employees e 
 ON s.employee_id = e.employee_id;
