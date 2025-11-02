@@ -12,6 +12,8 @@ BEGIN
 END;
 /
 
+
+
 -- Aufgabe 2 Komplexe Datentypen
 -- Ausgabe über bestimmtes Land 
 DECLARE
@@ -57,4 +59,31 @@ begin
   DBMS_OUTPUT.PUT_LINE(' ');
   SHOW_COUNTRY('US');
 end;
+/
+
+
+
+-- Aufgabe 3 Integration ins SELECT
+-- Gültigkeit der IBAN prüfen 
+CREATE OR REPLACE FUNCTION ist_iban_gueltig(p_iban IN VARCHAR2) 
+ return VARCHAR2
+AS
+  zahl number(24); -- umgebaute Zahl, die man für Modulo-Test braucht
+  pruefziffer number(2); -- Prüfziffer aus der IBAN
+BEGIN
+  zahl := substr(p_iban || '131400', 5); -- Ländercode DE und 00 an IBAN anhängen und ab dem 5. Zeichen die Zahlen übernehemen
+  pruefziffer := substr(p_iban, 3, 2); -- Holt die 2 Prüfziffer aus der IBAN an der 3. Stelle 
+
+  -- Ergebnis der Modulo Rechnung soll von 98 abgezogen werden und wenn es gleich der Prüfziffer ist, ist es gültig
+  IF pruefziffer =  98 - MOD(zahl, 97) then 
+  return 'Gültig';
+  ELSE 
+  return 'Ungültig';
+  END IF;
+END;
+/
+SELECT s.employee_id, e.FIRST_NAME, e.LAST_NAME, s.iban, e.salary, ist_iban_gueltig(s.iban) AS iban_gueltig
+FROM emp_account s 
+JOIN employees e 
+ON s.employee_id = e.employee_id;
 /
