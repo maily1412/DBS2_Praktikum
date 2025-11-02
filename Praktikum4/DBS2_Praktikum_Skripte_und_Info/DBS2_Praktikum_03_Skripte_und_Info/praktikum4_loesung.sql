@@ -87,3 +87,36 @@ FROM emp_account s
 JOIN employees e 
 ON s.employee_id = e.employee_id;
 /
+
+
+-- Aufgabe 4 Kontrollstrukturen
+CREATE OR REPLACE PROCEDURE set_employee_stars(v_empno emp.employee_id%TYPE) 
+AS
+  v_asterisk emp.stars%TYPE := NULL;
+  v_sal emp.salary%TYPE;  
+BEGIN
+  -- Gehalt aus der Tabelle lesen
+  SELECT salary 
+  INTO v_sal 
+  FROM emp 
+  WHERE employee_id = v_empno;
+
+  -- Alternativ mit einer FOR-Schleife?
+  -- LPAD(starttext, länge, füllzeichen) -> Mach den Text so lang, indem du von links mit dem Zeichen auffüllst
+  v_asterisk := LPAD('*', ROUND(v_sal / 1000), '*');
+
+  UPDATE emp
+  SET stars = v_asterisk
+  WHERE employee_id = v_empno;
+
+END;
+/
+SELECT employee_id, salary, stars 
+ FROM emp
+ WHERE employee_id=176; 
+
+/
+BEGIN 
+   set_employee_stars(176);
+END;
+/
