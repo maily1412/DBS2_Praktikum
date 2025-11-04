@@ -146,6 +146,7 @@ BEGIN
 END;
 
 
+
 -- Aufgabe 6 Trigger 
 -- Änderungen an der Spalte Gehalt soll protokolliert werden und nur zwischen 8 bis 18 Uhr an Werktagen erlaubt sein
 CREATE OR REPLACE TRIGGER emp_set_sal 
@@ -173,3 +174,23 @@ WHERE employee_id = 116;
 SELECT *
 FROM emp
 WHERE employee_id = 116;
+
+
+
+-- Aufgabe 7 Cursor
+CREATE OR REPLACE
+PROCEDURE output_employee(rec_emp employees%ROWTYPE)
+IS
+BEGIN
+  DBMS_OUTPUT.PUT_LINE ('____________________________________________________');
+  DBMS_OUTPUT.PUT_LINE ('Mitarbeiter Nr.: ' || rec_emp.employee_id);
+  DBMS_OUTPUT.PUT_LINE ('Name:            ' || rec_emp.first_name || ' ' || rec_emp.last_name);
+  DBMS_OUTPUT.PUT_LINE ('E-Mail:          ' || LOWER(rec_emp.email) || '@oracle.com');
+  DBMS_OUTPUT.PUT_LINE ('Telefon Nr.:     ' || rec_emp.phone_number);
+  DBMS_OUTPUT.PUT_LINE ('Eingestellt am:  ' || rec_emp.hire_date);
+  DBMS_OUTPUT.PUT_LINE ('Gehalt:          ' || rec_emp.salary || ' $');
+  DBMS_OUTPUT.PUT_LINE ('Beruf ID:        ' || rec_emp.job_id);
+  DBMS_OUTPUT.PUT_LINE ('Abteilung Nr.:   ' || rec_emp.department_id);
+  DBMS_OUTPUT.PUT_LINE ('Vorgesetzter Nr.:' || rec_emp.manager_id);
+  DBMS_OUTPUT.PUT_LINE ('____________________________________________________');
+END;
