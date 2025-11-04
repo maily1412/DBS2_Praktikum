@@ -91,30 +91,31 @@ ON s.employee_id = e.employee_id;
 
 -- Aufgabe 4 Kontrollstrukturen
 CREATE OR REPLACE PROCEDURE set_employee_stars(v_empno emp.employee_id%TYPE) 
-AS
-  v_asterisk emp.stars%TYPE := NULL;
-  v_sal emp.salary%TYPE;  
+IS
+  v_asterisk  emp.stars%TYPE := NULL; -- Sterne werden hier gesammelt 
+  v_sal       emp.salary%TYPE;        -- Gehalt 
 BEGIN
   -- Gehalt aus der Tabelle lesen
+  -- NVL(salary, 0) falls Mitarbeiter kein Gehalt hat, dann soll 0 ausgegeben werden. 
   SELECT salary 
   INTO v_sal 
   FROM emp 
   WHERE employee_id = v_empno;
 
-  -- Alternativ mit einer FOR-Schleife?
-  -- LPAD(starttext, länge, füllzeichen) -> Mach den Text so lang, indem du von links mit dem Zeichen auffüllst
-  v_asterisk := LPAD('*', ROUND(v_sal / 1000), '*');
+  -- Anzahl Sterne berechnen
+  -- 1 Stern pro 1000 €
+  -- LPAD(starttext, länge, füllzeichen) -> Mach den Text so lang, indem man von links mit dem Zeichen auffüllst
+  v_asterisk := LPAD('*', ROUND(v_sal / 1000), '*');  -- Alternativ mit einer FOR-Schleife?
 
+  -- Tabelle updaten
   UPDATE emp
   SET stars = v_asterisk
   WHERE employee_id = v_empno;
-
 END;
 /
 SELECT employee_id, salary, stars 
  FROM emp
  WHERE employee_id=176; 
-
 /
 BEGIN 
    set_employee_stars(176);
