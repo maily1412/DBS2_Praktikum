@@ -1,3 +1,6 @@
+Set SERVEROUTPUT ON;
+Set Echo ON;
+SPOOl Praktikum4_Maily.txt;
 
 -- Aufgabe 1 Grundlagen
 -- Höchste Abteilungsnummer ermitteln
