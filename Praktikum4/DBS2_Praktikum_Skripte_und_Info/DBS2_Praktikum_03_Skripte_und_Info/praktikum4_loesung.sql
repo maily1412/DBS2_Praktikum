@@ -89,6 +89,7 @@ ON s.employee_id = e.employee_id;
 /
 
 
+
 -- Aufgabe 4 Kontrollstrukturen
 CREATE OR REPLACE PROCEDURE set_employee_stars(v_empno emp.employee_id%TYPE) 
 IS
@@ -113,11 +114,13 @@ BEGIN
   WHERE employee_id = v_empno;
 END;
 /
-SELECT employee_id, salary, stars 
- FROM emp
- WHERE employee_id=176; 
-/
+-- Aufruf der Funktion
 BEGIN 
    set_employee_stars(176);
 END;
+/
+-- Tabelle emp anzeigen
+SELECT employee_id, salary, stars 
+ FROM emp
+ WHERE employee_id=176; 
 /
