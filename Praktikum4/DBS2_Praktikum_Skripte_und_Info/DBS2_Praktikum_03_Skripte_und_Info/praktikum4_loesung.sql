@@ -124,3 +124,20 @@ SELECT employee_id, salary, stars
  FROM emp
  WHERE employee_id=176; 
 /
+
+
+
+-- Aufgabe 5 Trigger
+-- beim Ändern oder Hinzufügen eines Angestellten soll automatisch die Spalte stars mit dem entsprechenden Wert gefüllt werden 
+CREATE OR REPLACE TRIGGER emp_set_stars 
+  BEFORE INSERT OR UPDATE ON emp 
+  FOR EACH ROW 
+DECLARE 
+  v_asterisk  emp.stars%TYPE := NULL; -- Sterne werden hier gesammelt 
+  v_sal       emp.salary%TYPE;        -- Gehalt  
+BEGIN
+  -- Korrelationsvariablen :OLD und :NEW kann auf jeweils aktuellen Daten zugreifen (Beide gleichzeitig sind nur für UPDATE definiert)
+  -- Warum kann man nicht in einem Trigger die Funktion set_employee_stars() aufrufen?
+  -- Warum werden hier nicht die SQL Befehle gebraucht? 
+  :NEW.stars := LPAD('*', ROUND(v_sal / 1000), '*');  
+END;
