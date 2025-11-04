@@ -144,3 +144,32 @@ BEGIN
   -- Warum werden hier nicht die SQL Befehle gebraucht? 
   :NEW.stars := LPAD('*', ROUND(v_sal / 1000), '*');  
 END;
+
+
+-- Aufgabe 6 Trigger 
+-- Änderungen an der Spalte Gehalt soll protokolliert werden und nur zwischen 8 bis 18 Uhr an Werktagen erlaubt sein
+CREATE OR REPLACE TRIGGER emp_set_sal 
+  BEFORE INSERT OR UPDATE ON emp 
+  FOR EACH ROW  
+BEGIN
+  -- SYSDATE ist aktuelle Zeitpunkt (Datum + Uhrzeit)
+  -- HH24 gibt die Stunde (im 24-Stunden-Format) als Text zurück
+  -- TO_NUMBER wandelt aktuelle Stunde in eine Zahl um
+  IF -- Wenn die Stunde zwischen 8 und 18 liegt und der Wochentag nicht Samstag oder Sonntag ist -> dann darf das Gehalt geändert werden.
+    TO_NUMBER(TO_CHAR(SYSDATE, 'HH24')) BETWEEN 8 AND 18 AND TO_CHAR(SYSDATE, 'DY') NOT IN ('SAT', 'SUN')
+  THEN
+    DBMS_OUTPUT.PUT_LINE('Gehalt wurde geändert');
+  ELSE -- ansonsten Error
+  -- Fehlernummer muss zwischen –20000 und –20999 liegen
+  RAISE_APPLICATION_ERROR (-20444,  'Gehalt kann nicht geändert werden. Nur zwischen 8 bis 18 Uhr an Werktagen möglich');
+  END IF;
+END;
+/
+-- Test:
+UPDATE emp
+SET salary = salary + 100
+WHERE employee_id = 116;
+-- Anzeigen:
+SELECT *
+FROM emp
+WHERE employee_id = 116;
