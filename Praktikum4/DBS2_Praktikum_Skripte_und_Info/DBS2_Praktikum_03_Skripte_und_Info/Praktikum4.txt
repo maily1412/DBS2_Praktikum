@@ -1,0 +1,2013 @@
+SQL> -- ==========================================================
+SQL> -- Aufgabe 1
+SQL> -- Höchste Abteilungsnummer ermitteln
+SQL> -- ==========================================================
+SQL> 
+SQL> 
+SQL> DECLARE
+  2      v_max_deptno NUMBER;            -- Höchste vorhandene department_id
+  3  BEGIN
+  4      -- MAX-Funktion holt sich die größte department_id aus der Tabelle departments
+  5      SELECT MAX(department_id)
+  6      INTO v_max_deptno
+  7      FROM departments;
+  8      DBMS_OUTPUT.PUT_LINE('Höchste Abteilungsnummer: ' || v_max_deptno);
+  9  END;
+ 10  /
+Höchste Abteilungsnummer: 270
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Aufgabe 2
+SQL> -- PL/SQL Block die Informationen über ein bestimmtes Land ausgibt
+SQL> -- ==========================================================
+SQL> 
+SQL> DECLARE
+  2      v_country_id VARCHAR2(20):='CA';        -- Ländercode für Kanada
+  3  
+  4      v_country_record countries%ROWTYPE; -- Speichert komplette Zeile aus countries
+  5  BEGIN
+  6      -- alle Spalten für das Land mit der ID 'CA' holen
+  7      SELECT *
+  8          INTO v_country_record
+  9          FROM countries
+ 10          WHERE country_id = UPPER(v_country_id);
+ 11      DBMS_OUTPUT.PUT_LINE('Land ID:' || v_country_record.country_id 
+ 12          || ' Name: ' || v_country_record.country_name 
+ 13          || ' Region ID: ' || v_country_record.region_id);
+ 14  END;
+ 15  /
+Land ID:CA Name: Canada Region ID: 2
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE SHOW_COUNTRY(p_country_id countries.country_id%type)
+  2  AS v_country_record countries%ROWTYPE;
+  3  BEGIN
+  4      SELECT *
+  5          INTO v_country_record
+  6          FROM countries
+  7          WHERE country_id = UPPER(p_country_id);
+  8      DBMS_OUTPUT.PUT_LINE('Land ID:' || v_country_record.country_id 
+  9          || ' Name: ' || v_country_record.country_name 
+ 10          || ' Region ID: ' || v_country_record.region_id);
+ 11  END;
+ 12  /
+
+Procedure SHOW_COUNTRY compiled
+
+No errors.
+SQL> 
+SQL> -- Test für Deutschland
+SQL> BEGIN
+  2      SHOW_COUNTRY('DE');
+  3  END;
+  4  /
+Land ID:DE Name: Germany Region ID: 1
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Test für Großbritannien
+SQL> BEGIN
+  2      SHOW_COUNTRY('UK');
+  3  END;
+  4  /
+Land ID:UK Name: United Kingdom Region ID: 1
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Test für USA
+SQL> BEGIN
+  2      SHOW_COUNTRY('US');
+  3  END;
+  4  /
+Land ID:US Name: United States of America Region ID: 2
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Aufgabe 3
+SQL> -- Funktion zur Überprüfung  IBAN
+SQL> -- ==========================================================
+SQL> 
+SQL> -- Funktion liefert 'OK' bei gültiger IBAN, sonst 'INVALID'
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION pruefe_iban(p_iban IN VARCHAR2)
+  2  RETURN VARCHAR2
+  3  AS
+  4      nummer NUMBER(24);       -- Umgestellte IBAN als Zahl
+  5      pruefnummer NUMBER(2);      -- Prüfziffer der IBAN
+  6  BEGIN
+  7      -- IBAN nach Standard umstellen (Länderkennung + Prüfziffer ans Ende)
+  8      nummer :=SUBSTR(p_iban, 5 || '131400');
+  9  
+ 10      -- Prüfziffer aus Position 3–4 ermitteln
+ 11      pruefnummer :=SUBSTR(p_iban, 3, 2);
+ 12  
+ 13      -- Vergleich nach Modulo-97-Verfahren
+ 14      IF pruefnummer = 98 - MOD(nummer, 97) THEN
+ 15          RETURN 'OK';
+ 16      ELSE
+ 17          RETURN 'INVALID';
+ 18      END IF;
+ 19  END;
+ 20  /
+
+Function PRUEFE_IBAN compiled
+
+No errors.
+SQL> 
+SQL> -- Mitarbeiterliste inkl. IBAN und Prüfergebnis ausgeben
+SQL> SELECT
+  2      s.employee_id,
+  3      e.first_name,
+  4      e.last_name,
+  5      s.iban,
+  6      e.salary,
+  7      pruefe_iban(s.iban) AS is_valid
+  8  FROM 
+  9      emp_account s 
+ 10      JOIN employees e ON s.employee_id = e.employee_id
+ 11  ORDER BY
+ 12      s.employee_id;
+
+EMPLOYEE_ID FIRST_NAME           LAST_NAME                 IBAN                             SALARY IS_VALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+----------- -------------------- ------------------------- ---------------------------- ---------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        101 Neena                Kochhar                   DE19500105171414233372            17000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        102 Lex                  De Haan                   DE70502702940475714235            17000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        103 Alexander            Hunold                    DE05897254850420485858             9000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        104 Bruce                Ernst                     DE88547760555786844532             6000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        105 David                Austin                    DE40370613041566552776             4800 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        106 Valli                Pataballa                 DE29974969917403954322             4800 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        198 Donald               OConnell                  DE87648045234485030332             2600 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        199 Douglas              Grant                     DE89370400440532013000             2600 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        200 Jennifer             Whalen                    DE87648045234485030332             4400 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        201 Michael              Hartstein                 DE08700901001234467890            13000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        202 Pat                  Fay                       DE73500105175749995145             6000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
+EMPLOYEE_ID FIRST_NAME           LAST_NAME                 IBAN                             SALARY IS_VALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+----------- -------------------- ------------------------- ---------------------------- ---------- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        203 Susan                Mavris                    DE64500105179932457894             6500 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        204 Hermann              Baer                      DE47500105172371723845            10000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        205 Shelley              Higgins                   DE25500105176825282913            12000 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        206 William              Gietz                     DE71500105173839853139             8300 INVALID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
+15 rows selected. 
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Aufgabe 4
+SQL> -- Kontrollstrukturen - Sternchen basierend auf Gehalt
+SQL> -- ==========================================================
+SQL> 
+SQL> -- Prozedur setzen Sternchen basierend auf Gehalt
+SQL> CREATE OR REPLACE PROCEDURE set_employee_stars(v_empno emp.employee_id%TYPE)
+  2  AS
+  3      v_asterisk emp.stars%TYPE := NULL;  -- hier werden die Sterne gespeichert
+  4      v_sal emp.salary%TYPE;              -- Gehalt des Mitarbeiters
+  5  BEGIN   
+  6       -- Gehalt des angegebenen Mitarbeiters lesen
+  7      SELECT salary
+  8      INTO v_sal
+  9      FROM emp
+ 10      WHERE employee_id = v_empno;
+ 11  
+ 12      -- Pro 1000 € Gehalt ein Sternchen hinzufügen
+ 13      -- Die Schleife läuft so oft, wie das Gehalt durch 1000 gerundet ergibt
+ 14      FOR i IN 1..ROUND(v_sal / 1000) 
+ 15      LOOP
+ 16          v_asterisk := v_asterisk || '*';    -- in jeder Runde ein * anhängen
+ 17      END LOOP;
+ 18  
+ 19      -- Spalte stars aktualisieren
+ 20      UPDATE emp
+ 21      SET stars = v_asterisk
+ 22      WHERE employee_id = v_empno;
+ 23  
+ 24      COMMIT;
+ 25  END;
+ 26  /
+
+Procedure SET_EMPLOYEE_STARS compiled
+
+No errors.
+SQL> 
+SQL> -- Beispielaufruf für Mitarbeiter 176
+SQL> BEGIN
+  2      set_employee_stars(176);
+  3  END;
+  4  /
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Mitarbeiter mit Sternchen anzeigen
+SQL> SELECT 
+  2      employee_id,
+  3      first_name,
+  4      last_name,
+  5      salary,
+  6      stars
+  7  FROM emp
+  8  WHERE employee_id = 176;
+
+EMPLOYEE_ID FIRST_NAME           LAST_NAME                     SALARY STARS                                             
+----------- -------------------- ------------------------- ---------- --------------------------------------------------
+        176 Jonathon             Taylor                         14600 ***************                                   
+
+SQL> 
+SQL> --==========================================================
+SQL> -- Aufgabe 5
+SQL> -- Trigger zum automatischen Setzen der Sternchen
+SQL> --==========================================================
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER emp_set_stars
+  2   BEFORE INSERT OR UPDATE ON emp
+  3   FOR EACH ROW
+  4  DECLARE
+  5      v_asterisk emp.stars%TYPE := NULL;  -- Zwischenpuffer für Sternchen
+  6      v_sal emp.salary%TYPE;              -- Rundungsbasis
+  7  BEGIN
+  8       -- Anzahl Sterne aus dem Gehalt ableiten
+  9      v_sal := ROUND(:NEW.salary / 1000);
+ 10  
+ 11      -- Sternchen-Schleife, hängt pro 1000 € ein Stern an 
+ 12      FOR i IN 1..v_sal 
+ 13      LOOP
+ 14          v_asterisk := v_asterisk || '*';
+ 15      END LOOP;
+ 16  
+ 17      -- fertige Sternchen-Zeichenkette wird in  den neuen Datensatz geschrieben
+ 18      :NEW.stars := v_asterisk;
+ 19  END;
+ 20  /
+
+Trigger EMP_SET_STARS compiled
+
+No errors.
+SQL> 
+SQL> --==========================================================
+SQL> -- Aufgabe 6
+SQL> -- Protokoll-Tabelle für Gehaltsänderungen
+SQL> --==========================================================
+SQL> 
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER ueberpruefe_gehaltsaenderung
+  2  BEFORE INSERT OR UPDATE OF salary ON emp  -- wird ausgelöst bei INSERT oder wenn salary geändert wird
+  3  FOR EACH ROW
+  4  DECLARE
+  5      v_hour NUMBER;                      -- aktuelle Stunde (0–23)
+  6      v_day VARCHAR2(10);                 -- aktueller Wochentag
+  7  BEGIN
+  8      -- aktuelle Uhrzeit und Wochentag abfragen
+  9      v_hour := TO_NUMBER(TO_CHAR(SYSDATE, 'HH24'));
+ 10      v_day := TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH');
+ 11  
+ 12      IF 
+ 13          v_hour < 8 OR v_hour >= 18 OR v_day IN ('SAT', 'SUN') THEN
+ 14          -- falls ja: Änderung verbieten
+ 15          RAISE_APPLICATION_ERROR(-20001, 
+ 16              'Gehaltsänderungen nur werktags zwischen 8 und 18 Uhr!');
+ 17      END IF;
+ 18       -- Wenn sich das Gehalt tatsächlich ändert oder beim Einfügen ein neues Gehalt gesetzt wird
+ 19      IF :NEW.salary != :OLD.salary THEN
+ 20      -- Änderung in die Protokoll-Tabelle eintragen
+ 21          INSERT INTO salary_log (employee_id, old_salary, new_salary)
+ 22          VALUES (:NEW.employee_id, :OLD.salary, :NEW.salary);
+ 23      END IF;
+ 24  END;
+ 25  /
+
+Trigger UEBERPRUEFE_GEHALTSAENDERUNG compiled
+
+No errors.
+SQL> 
+SQL> -- Test: Gehalt des Mitarbeiters 176 um 1000 € erhöhen
+SQL> UPDATE emp
+  2  SET salary = salary + 1000
+  3  WHERE employee_id = 176;
+
+1 row updated.
+
+SQL> 
+SQL> SELECT * FROM salary_log ORDER BY changed_at DESC;
+
+    LOG_ID EMPLOYEE_ID OLD_SALARY NEW_SALARY CHANGED_AT                 
+---------- ----------- ---------- ---------- ---------------------------
+        27         176      14600      15600 04.11.25 13:09:54,948223000
+        26         176      14600      15600 04.11.25 13:09:54,948199000
+        25         176      14600      15600 04.11.25 13:09:54,948103000
+        24         176      13600      14600 04.11.25 12:57:42,990258000
+        23         176      13600      14600 04.11.25 12:57:42,990233000
+        22         176      13600      14600 04.11.25 12:57:42,990150000
+        21         176      12600      13600 04.11.25 12:56:24,154692000
+        20         176      12600      13600 04.11.25 12:56:24,154667000
+        19         176      12600      13600 04.11.25 12:56:24,154576000
+        18         176      11600      12600 04.11.25 12:55:29,440297000
+        17         176      11600      12600 04.11.25 12:55:29,440253000
+
+    LOG_ID EMPLOYEE_ID OLD_SALARY NEW_SALARY CHANGED_AT                 
+---------- ----------- ---------- ---------- ---------------------------
+        16         176      11600      12600 04.11.25 12:55:29,440010000
+        15         176      10600      11600 04.11.25 12:55:10,242380000
+        14         176      10600      11600 04.11.25 12:55:10,242343000
+        13         176      10600      11600 04.11.25 12:55:10,242052000
+         9         176       9600      10600 04.11.25 09:59:33,046496000
+         8         176       9600      10600 04.11.25 09:59:33,046465000
+         7         176       9600      10600 04.11.25 09:59:33,046337000
+         6         176       9100       9600 04.11.25 09:58:05,571666000
+         5         176       9100       9600 04.11.25 09:58:05,571640000
+         4         176       9100       9600 04.11.25 09:58:05,571543000
+         3         176       8600       9100 04.11.25 09:57:31,951549000
+
+    LOG_ID EMPLOYEE_ID OLD_SALARY NEW_SALARY CHANGED_AT                 
+---------- ----------- ---------- ---------- ---------------------------
+         2         176       8600       9100 04.11.25 09:57:31,951508000
+         1         176       8600       9100 04.11.25 09:57:31,949515000
+
+24 rows selected. 
+
+SQL> 
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Aufgabe 7a
+SQL> -- Prozedur zur Ausgabe eines Mitarbeiters
+SQL> -- ==========================================================
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE output_employee(p_emp employees%ROWTYPE)
+  2  AS
+  3  BEGIN
+  4      DBMS_OUTPUT.PUT_LINE('____________________________________________________');
+  5      DBMS_OUTPUT.PUT_LINE('Mitarbeiter Nr.: ' || p_emp.employee_id);
+  6      DBMS_OUTPUT.PUT_LINE('Name:            ' || p_emp.first_name || ' ' || p_emp.last_name);
+  7      DBMS_OUTPUT.PUT_LINE('E-Mail:          ' || LOWER(p_emp.email) || '@oracle.com');
+  8      DBMS_OUTPUT.PUT_LINE('Telefon Nr.:     ' || p_emp.phone_number);
+  9      DBMS_OUTPUT.PUT_LINE('Eingestellt am:  ' || TO_CHAR(p_emp.hire_date, 'DD.MM.YY'));
+ 10      DBMS_OUTPUT.PUT_LINE('Gehalt:          ' || p_emp.salary || ' $');
+ 11      DBMS_OUTPUT.PUT_LINE('Beruf ID:        ' || p_emp.job_id);
+ 12      DBMS_OUTPUT.PUT_LINE('Abteilung Nr.:   ' || p_emp.department_id);
+ 13      DBMS_OUTPUT.PUT_LINE('Vorgesetzter Nr.:' || p_emp.manager_id);
+ 14      DBMS_OUTPUT.PUT_LINE('____________________________________________________');
+ 15  END;
+ 16  /
+
+Procedure OUTPUT_EMPLOYEE compiled
+
+No errors.
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Anonymer Block: Mitarbeiter holen und ausgeben
+SQL> -- ==========================================================
+SQL> 
+SQL> DECLARE
+  2      p_emp employees%ROWTYPE;   -- Variable, die die ganze Zeile speichern kann
+  3  BEGIN
+  4      -- Mitarbeiter mit ID 101 aus der Tabelle holen
+  5      SELECT * INTO p_emp
+  6      FROM employees
+  7      WHERE employee_id = 101;
+  8  
+  9      -- Prozedur zur Ausgabe aufrufen
+ 10      output_employee(p_emp);
+ 11  END;
+ 12  /
+____________________________________________________
+Mitarbeiter Nr.: 101
+Name:            Neena Kochhar
+E-Mail:          nkochhar@oracle.com
+Telefon Nr.:     515.123.4568
+Eingestellt am:  21.09.89
+Gehalt:          17000 $
+Beruf ID:        AD_VP
+Abteilung Nr.:   90
+Vorgesetzter Nr.:100
+____________________________________________________
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Aufgabe 7b
+SQL> -- Erweiterte Ausgabe eines Mitarbeiters mit Texten
+SQL> -- ==========================================================
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE output_employee_b(p_emp employees%ROWTYPE)
+  2  AS
+  3      v_job_title jobs.job_title%TYPE;                -- Jobtitel Mitarbeiters
+  4      v_department_name departments.department_name%TYPE; -- Abteilungsname
+  5      v_manager_name VARCHAR2(100);                   -- Name des Vorgesetzten
+  6  BEGIN
+  7     -- Abteilungsname nur ermitteln, falls vorhanden
+  8      IF p_emp.department_id IS NOT NULL THEN
+  9          SELECT department_name
+ 10          INTO v_department_name
+ 11          FROM departments
+ 12          WHERE department_id = p_emp.department_id;
+ 13      END IF;
+ 14  
+ 15        -- Jobtitel zur Job-ID ermitteln
+ 16      SELECT job_title
+ 17      INTO v_job_title
+ 18      FROM jobs
+ 19      WHERE job_id = p_emp.job_id;
+ 20  
+ 21      -- Managername nur ermitteln, falls vorhanden
+ 22      IF p_emp.manager_id IS NOT NULL THEN
+ 23          SELECT first_name || ' ' || last_name
+ 24          INTO v_manager_name
+ 25          FROM employees
+ 26          WHERE employee_id = p_emp.manager_id;
+ 27      END IF;
+ 28  
+ 29      -- Ausgabe des formatierten Mitarbeiterprofils
+ 30      DBMS_OUTPUT.PUT_LINE('____________________________________________________');
+ 31      DBMS_OUTPUT.PUT_LINE('Mitarbeiter Nr.: ' || p_emp.employee_id);
+ 32      DBMS_OUTPUT.PUT_LINE('Name:            ' || p_emp.first_name || ' ' || p_emp.last_name);
+ 33      DBMS_OUTPUT.PUT_LINE('E-Mail:          ' || LOWER(p_emp.email) || '@oracle.com');
+ 34      DBMS_OUTPUT.PUT_LINE('Telefon Nr.:     ' || p_emp.phone_number);
+ 35      DBMS_OUTPUT.PUT_LINE('Eingestellt am:  ' || TO_CHAR(p_emp.hire_date, 'DD.MM.YY'));
+ 36      DBMS_OUTPUT.PUT_LINE('Gehalt:          ' || p_emp.salary || ' $');
+ 37      DBMS_OUTPUT.PUT_LINE('Beruf:           ' || v_job_title);
+ 38      DBMS_OUTPUT.PUT_LINE('Abteilung:       ' || v_department_name);
+ 39      DBMS_OUTPUT.PUT_LINE('Vorgesetzter:    ' || v_manager_name);
+ 40      DBMS_OUTPUT.PUT_LINE('____________________________________________________');
+ 41  END;
+ 42  /
+
+Procedure OUTPUT_EMPLOYEE_B compiled
+
+No errors.
+SQL> 
+SQL> --Test erweiterten Prozedur
+SQL> DECLARE
+  2      p_emp employees%ROWTYPE;
+  3  BEGIN
+  4      SELECT * INTO p_emp
+  5      FROM employees
+  6      WHERE employee_id = 101;
+  7  
+  8      output_employee_b(p_emp);
+  9  END;
+ 10  /
+____________________________________________________
+Mitarbeiter Nr.: 101
+Name:            Neena Kochhar
+E-Mail:          nkochhar@oracle.com
+Telefon Nr.:     515.123.4568
+Eingestellt am:  21.09.89
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Aufgabe 7c
+SQL> -- Alle Mitarbeiter mit Cursor ausgeben
+SQL> -- ==========================================================
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE output_employees
+  2  AS
+  3      p_emp employees%ROWTYPE;   -- Variable für die Mitarbeiterdaten
+  4  
+  5      CURSOR emp_cursor        -- Cursor für alle Mitarbeiter der Tabelle
+  6      IS
+  7          SELECT * FROM employees;
+  8      BEGIN
+  9      -- Cursor öffnen und sequenziell verarbeiten
+ 10      OPEN emp_cursor;
+ 11  
+ 12      LOOP
+ 13          FETCH emp_cursor INTO p_emp;          -- nächsten Datensatz holen
+ 14          EXIT WHEN emp_cursor%NOTFOUND;        -- Schleife beenden, wenn keine Daten mehr da
+ 15  
+ 16  
+ 17          output_employee_b(p_emp);
+ 18      END LOOP;
+ 19  
+ 20      -- Cursor schließen
+ 21      CLOSE emp_cursor;
+ 22  END;
+ 23  /
+
+Procedure OUTPUT_EMPLOYEES compiled
+
+No errors.
+SQL> 
+SQL> --- Test der Prozedur zur Ausgabe aller Mitarbeiter
+SQL> EXECUTE output_employees;
+____________________________________________________
+Mitarbeiter Nr.: 100
+Name:            Steven King
+E-Mail:          sking@oracle.com
+Telefon Nr.:     515.123.4567
+Eingestellt am:  17.06.87
+Gehalt:          24000 $
+Beruf:           President
+Abteilung:       Executive
+Vorgesetzter:    
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 101
+Name:            Neena Kochhar
+E-Mail:          nkochhar@oracle.com
+Telefon Nr.:     515.123.4568
+Eingestellt am:  21.09.89
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 102
+Name:            Lex De Haan
+E-Mail:          ldehaan@oracle.com
+Telefon Nr.:     515.123.4569
+Eingestellt am:  13.01.93
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 103
+Name:            Alexander Hunold
+E-Mail:          ahunold@oracle.com
+Telefon Nr.:     590.423.4567
+Eingestellt am:  03.01.90
+Gehalt:          9000 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Lex De Haan
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 104
+Name:            Bruce Ernst
+E-Mail:          bernst@oracle.com
+Telefon Nr.:     590.423.4568
+Eingestellt am:  21.05.91
+Gehalt:          6000 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 105
+Name:            David Austin
+E-Mail:          daustin@oracle.com
+Telefon Nr.:     590.423.4569
+Eingestellt am:  25.06.97
+Gehalt:          4800 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 106
+Name:            Valli Pataballa
+E-Mail:          vpatabal@oracle.com
+Telefon Nr.:     590.423.4560
+Eingestellt am:  05.02.98
+Gehalt:          4800 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 107
+Name:            Diana Lorentz
+E-Mail:          dlorentz@oracle.com
+Telefon Nr.:     590.423.5567
+Eingestellt am:  07.02.99
+Gehalt:          4200 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 108
+Name:            Nancy Greenberg
+E-Mail:          ngreenbe@oracle.com
+Telefon Nr.:     515.124.4569
+Eingestellt am:  17.08.94
+Gehalt:          12000 $
+Beruf:           Finance Manager
+Abteilung:       Finance
+Vorgesetzter:    Neena Kochhar
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 109
+Name:            Daniel Faviet
+E-Mail:          dfaviet@oracle.com
+Telefon Nr.:     515.124.4169
+Eingestellt am:  16.08.94
+Gehalt:          9000 $
+Beruf:           Accountant
+Abteilung:       Finance
+Vorgesetzter:    Nancy Greenberg
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 110
+Name:            John Chen
+E-Mail:          jchen@oracle.com
+Telefon Nr.:     515.124.4269
+Eingestellt am:  28.09.97
+Gehalt:          8200 $
+Beruf:           Accountant
+Abteilung:       Finance
+Vorgesetzter:    Nancy Greenberg
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 111
+Name:            Ismael Sciarra
+E-Mail:          isciarra@oracle.com
+Telefon Nr.:     515.124.4369
+Eingestellt am:  30.09.97
+Gehalt:          7700 $
+Beruf:           Accountant
+Abteilung:       Finance
+Vorgesetzter:    Nancy Greenberg
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 112
+Name:            Jose Manuel Urman
+E-Mail:          jmurman@oracle.com
+Telefon Nr.:     515.124.4469
+Eingestellt am:  07.03.98
+Gehalt:          7800 $
+Beruf:           Accountant
+Abteilung:       Finance
+Vorgesetzter:    Nancy Greenberg
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 113
+Name:            Luis Popp
+E-Mail:          lpopp@oracle.com
+Telefon Nr.:     515.124.4567
+Eingestellt am:  07.12.99
+Gehalt:          6900 $
+Beruf:           Accountant
+Abteilung:       Finance
+Vorgesetzter:    Nancy Greenberg
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 114
+Name:            Den Raphaely
+E-Mail:          drapheal@oracle.com
+Telefon Nr.:     515.127.4561
+Eingestellt am:  07.12.94
+Gehalt:          11000 $
+Beruf:           Purchasing Manager
+Abteilung:       Purchasing
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 115
+Name:            Alexander Khoo
+E-Mail:          akhoo@oracle.com
+Telefon Nr.:     515.127.4562
+Eingestellt am:  18.05.95
+Gehalt:          3100 $
+Beruf:           Purchasing Clerk
+Abteilung:       Purchasing
+Vorgesetzter:    Den Raphaely
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 116
+Name:            Shelli Baida
+E-Mail:          sbaida@oracle.com
+Telefon Nr.:     515.127.4563
+Eingestellt am:  24.12.97
+Gehalt:          2900 $
+Beruf:           Purchasing Clerk
+Abteilung:       Purchasing
+Vorgesetzter:    Den Raphaely
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 117
+Name:            Sigal Tobias
+E-Mail:          stobias@oracle.com
+Telefon Nr.:     515.127.4564
+Eingestellt am:  24.07.97
+Gehalt:          2800 $
+Beruf:           Purchasing Clerk
+Abteilung:       Purchasing
+Vorgesetzter:    Den Raphaely
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 118
+Name:            Guy Himuro
+E-Mail:          ghimuro@oracle.com
+Telefon Nr.:     515.127.4565
+Eingestellt am:  15.11.98
+Gehalt:          2600 $
+Beruf:           Purchasing Clerk
+Abteilung:       Purchasing
+Vorgesetzter:    Den Raphaely
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 119
+Name:            Karen Colmenares
+E-Mail:          kcolmena@oracle.com
+Telefon Nr.:     515.127.4566
+Eingestellt am:  10.08.99
+Gehalt:          2500 $
+Beruf:           Purchasing Clerk
+Abteilung:       Purchasing
+Vorgesetzter:    Den Raphaely
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 120
+Name:            Matthew Weiss
+E-Mail:          mweiss@oracle.com
+Telefon Nr.:     650.123.1234
+Eingestellt am:  18.07.96
+Gehalt:          8000 $
+Beruf:           Stock Manager
+Abteilung:       Shipping
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 121
+Name:            Adam Fripp
+E-Mail:          afripp@oracle.com
+Telefon Nr.:     650.123.2234
+Eingestellt am:  10.04.97
+Gehalt:          8200 $
+Beruf:           Stock Manager
+Abteilung:       Shipping
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 122
+Name:            Payam Kaufling
+E-Mail:          pkauflin@oracle.com
+Telefon Nr.:     650.123.3234
+Eingestellt am:  01.05.95
+Gehalt:          7900 $
+Beruf:           Stock Manager
+Abteilung:       Shipping
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 123
+Name:            Shanta Vollman
+E-Mail:          svollman@oracle.com
+Telefon Nr.:     650.123.4234
+Eingestellt am:  10.10.97
+Gehalt:          6500 $
+Beruf:           Stock Manager
+Abteilung:       Shipping
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 124
+Name:            Kevin Mourgos
+E-Mail:          kmourgos@oracle.com
+Telefon Nr.:     650.123.5234
+Eingestellt am:  16.11.99
+Gehalt:          5800 $
+Beruf:           Stock Manager
+Abteilung:       Shipping
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 125
+Name:            Julia Nayer
+E-Mail:          jnayer@oracle.com
+Telefon Nr.:     650.124.1214
+Eingestellt am:  16.07.97
+Gehalt:          3200 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 126
+Name:            Irene Mikkilineni
+E-Mail:          imikkili@oracle.com
+Telefon Nr.:     650.124.1224
+Eingestellt am:  28.09.98
+Gehalt:          2700 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 127
+Name:            James Landry
+E-Mail:          jlandry@oracle.com
+Telefon Nr.:     650.124.1334
+Eingestellt am:  14.01.99
+Gehalt:          2400 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 128
+Name:            Steven Markle
+E-Mail:          smarkle@oracle.com
+Telefon Nr.:     650.124.1434
+Eingestellt am:  08.03.00
+Gehalt:          2200 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 129
+Name:            Laura Bissot
+E-Mail:          lbissot@oracle.com
+Telefon Nr.:     650.124.5234
+Eingestellt am:  20.08.97
+Gehalt:          3300 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 130
+Name:            Mozhe Atkinson
+E-Mail:          matkinso@oracle.com
+Telefon Nr.:     650.124.6234
+Eingestellt am:  30.10.97
+Gehalt:          2800 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 131
+Name:            James Marlow
+E-Mail:          jamrlow@oracle.com
+Telefon Nr.:     650.124.7234
+Eingestellt am:  16.02.97
+Gehalt:          2500 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 132
+Name:            TJ Olson
+E-Mail:          tjolson@oracle.com
+Telefon Nr.:     650.124.8234
+Eingestellt am:  10.04.99
+Gehalt:          2100 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 133
+Name:            Jason Mallin
+E-Mail:          jmallin@oracle.com
+Telefon Nr.:     650.127.1934
+Eingestellt am:  14.06.96
+Gehalt:          3300 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 134
+Name:            Michael Rogers
+E-Mail:          mrogers@oracle.com
+Telefon Nr.:     650.127.1834
+Eingestellt am:  26.08.98
+Gehalt:          2900 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 135
+Name:            Ki Gee
+E-Mail:          kgee@oracle.com
+Telefon Nr.:     650.127.1734
+Eingestellt am:  12.12.99
+Gehalt:          2400 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 136
+Name:            Hazel Philtanker
+E-Mail:          hphiltan@oracle.com
+Telefon Nr.:     650.127.1634
+Eingestellt am:  06.02.00
+Gehalt:          2200 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 137
+Name:            Renske Ladwig
+E-Mail:          rladwig@oracle.com
+Telefon Nr.:     650.121.1234
+Eingestellt am:  14.07.95
+Gehalt:          3600 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 138
+Name:            Stephen Stiles
+E-Mail:          sstiles@oracle.com
+Telefon Nr.:     650.121.2034
+Eingestellt am:  26.10.97
+Gehalt:          3200 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 139
+Name:            John Seo
+E-Mail:          jseo@oracle.com
+Telefon Nr.:     650.121.2019
+Eingestellt am:  12.02.98
+Gehalt:          2700 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 140
+Name:            Joshua Patel
+E-Mail:          jpatel@oracle.com
+Telefon Nr.:     650.121.1834
+Eingestellt am:  06.04.98
+Gehalt:          2500 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 141
+Name:            Trenna Rajs
+E-Mail:          trajs@oracle.com
+Telefon Nr.:     650.121.8009
+Eingestellt am:  17.10.95
+Gehalt:          3500 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 142
+Name:            Curtis Davies
+E-Mail:          cdavies@oracle.com
+Telefon Nr.:     650.121.2994
+Eingestellt am:  29.01.97
+Gehalt:          3100 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 143
+Name:            Randall Matos
+E-Mail:          rmatos@oracle.com
+Telefon Nr.:     650.121.2874
+Eingestellt am:  15.03.98
+Gehalt:          2600 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 144
+Name:            Peter Vargas
+E-Mail:          pvargas@oracle.com
+Telefon Nr.:     650.121.2004
+Eingestellt am:  09.07.98
+Gehalt:          2500 $
+Beruf:           Stock Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 145
+Name:            John Russell
+E-Mail:          jrussel@oracle.com
+Telefon Nr.:     011.44.1344.429268
+Eingestellt am:  01.10.96
+Gehalt:          14000 $
+Beruf:           Sales Manager
+Abteilung:       Sales
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 146
+Name:            Karen Partners
+E-Mail:          kpartner@oracle.com
+Telefon Nr.:     011.44.1344.467268
+Eingestellt am:  05.01.97
+Gehalt:          13500 $
+Beruf:           Sales Manager
+Abteilung:       Sales
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 147
+Name:            Alberto Errazuriz
+E-Mail:          aerrazur@oracle.com
+Telefon Nr.:     011.44.1344.429278
+Eingestellt am:  10.03.97
+Gehalt:          12000 $
+Beruf:           Sales Manager
+Abteilung:       Sales
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 148
+Name:            Gerald Cambrault
+E-Mail:          gcambrau@oracle.com
+Telefon Nr.:     011.44.1344.619268
+Eingestellt am:  15.10.99
+Gehalt:          11000 $
+Beruf:           Sales Manager
+Abteilung:       Sales
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 149
+Name:            Eleni Zlotkey
+E-Mail:          ezlotkey@oracle.com
+Telefon Nr.:     011.44.1344.429018
+Eingestellt am:  29.01.00
+Gehalt:          10500 $
+Beruf:           Sales Manager
+Abteilung:       Sales
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 150
+Name:            Peter Tucker
+E-Mail:          ptucker@oracle.com
+Telefon Nr.:     011.44.1344.129268
+Eingestellt am:  30.01.97
+Gehalt:          10000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    John Russell
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 151
+Name:            David Bernstein
+E-Mail:          dbernste@oracle.com
+Telefon Nr.:     011.44.1344.345268
+Eingestellt am:  24.03.97
+Gehalt:          9500 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    John Russell
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 152
+Name:            Peter Hall
+E-Mail:          phall@oracle.com
+Telefon Nr.:     011.44.1344.478968
+Eingestellt am:  20.08.97
+Gehalt:          9000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    John Russell
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 153
+Name:            Christopher Olsen
+E-Mail:          colsen@oracle.com
+Telefon Nr.:     011.44.1344.498718
+Eingestellt am:  30.03.98
+Gehalt:          8000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    John Russell
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 154
+Name:            Nanette Cambrault
+E-Mail:          ncambrau@oracle.com
+Telefon Nr.:     011.44.1344.987668
+Eingestellt am:  09.12.98
+Gehalt:          7500 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    John Russell
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 155
+Name:            Oliver Tuvault
+E-Mail:          otuvault@oracle.com
+Telefon Nr.:     011.44.1344.486508
+Eingestellt am:  23.11.99
+Gehalt:          7000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    John Russell
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 156
+Name:            Janette King
+E-Mail:          jking@oracle.com
+Telefon Nr.:     011.44.1345.429268
+Eingestellt am:  30.01.96
+Gehalt:          10000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Karen Partners
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 157
+Name:            Patrick Sully
+E-Mail:          psully@oracle.com
+Telefon Nr.:     011.44.1345.929268
+Eingestellt am:  04.03.96
+Gehalt:          9500 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Karen Partners
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 158
+Name:            Allan McEwen
+E-Mail:          amcewen@oracle.com
+Telefon Nr.:     011.44.1345.829268
+Eingestellt am:  01.08.96
+Gehalt:          9000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Karen Partners
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 159
+Name:            Lindsey Smith
+E-Mail:          lsmith@oracle.com
+Telefon Nr.:     011.44.1345.729268
+Eingestellt am:  10.03.97
+Gehalt:          8000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Karen Partners
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 160
+Name:            Louise Doran
+E-Mail:          ldoran@oracle.com
+Telefon Nr.:     011.44.1345.629268
+Eingestellt am:  15.12.97
+Gehalt:          7500 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Karen Partners
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 161
+Name:            Sarath Sewall
+E-Mail:          ssewall@oracle.com
+Telefon Nr.:     011.44.1345.529268
+Eingestellt am:  03.11.98
+Gehalt:          7000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Karen Partners
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 162
+Name:            Clara Vishney
+E-Mail:          cvishney@oracle.com
+Telefon Nr.:     011.44.1346.129268
+Eingestellt am:  11.11.97
+Gehalt:          10500 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Alberto Errazuriz
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 163
+Name:            Danielle Greene
+E-Mail:          dgreene@oracle.com
+Telefon Nr.:     011.44.1346.229268
+Eingestellt am:  19.03.99
+Gehalt:          9500 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Alberto Errazuriz
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 164
+Name:            Mattea Marvins
+E-Mail:          mmarvins@oracle.com
+Telefon Nr.:     011.44.1346.329268
+Eingestellt am:  24.01.00
+Gehalt:          7200 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Alberto Errazuriz
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 165
+Name:            David Lee
+E-Mail:          dlee@oracle.com
+Telefon Nr.:     011.44.1346.529268
+Eingestellt am:  23.02.00
+Gehalt:          6800 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Alberto Errazuriz
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 166
+Name:            Sundar Ande
+E-Mail:          sande@oracle.com
+Telefon Nr.:     011.44.1346.629268
+Eingestellt am:  24.03.00
+Gehalt:          6400 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Alberto Errazuriz
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 167
+Name:            Amit Banda
+E-Mail:          abanda@oracle.com
+Telefon Nr.:     011.44.1346.729268
+Eingestellt am:  21.04.00
+Gehalt:          6200 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Alberto Errazuriz
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 168
+Name:            Lisa Ozer
+E-Mail:          lozer@oracle.com
+Telefon Nr.:     011.44.1343.929268
+Eingestellt am:  11.03.97
+Gehalt:          11500 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Gerald Cambrault
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 169
+Name:            Harrison Bloom
+E-Mail:          hbloom@oracle.com
+Telefon Nr.:     011.44.1343.829268
+Eingestellt am:  23.03.98
+Gehalt:          10000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Gerald Cambrault
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 170
+Name:            Tayler Fox
+E-Mail:          tfox@oracle.com
+Telefon Nr.:     011.44.1343.729268
+Eingestellt am:  24.01.98
+Gehalt:          9600 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Gerald Cambrault
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 171
+Name:            William Smith
+E-Mail:          wsmith@oracle.com
+Telefon Nr.:     011.44.1343.629268
+Eingestellt am:  23.02.99
+Gehalt:          7400 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Gerald Cambrault
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 172
+Name:            Elizabeth Bates
+E-Mail:          ebates@oracle.com
+Telefon Nr.:     011.44.1343.529268
+Eingestellt am:  24.03.99
+Gehalt:          7300 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Gerald Cambrault
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 173
+Name:            Sundita Kumar
+E-Mail:          skumar@oracle.com
+Telefon Nr.:     011.44.1343.329268
+Eingestellt am:  21.04.00
+Gehalt:          6100 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Gerald Cambrault
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 174
+Name:            Ellen Abel
+E-Mail:          eabel@oracle.com
+Telefon Nr.:     011.44.1644.429267
+Eingestellt am:  11.05.96
+Gehalt:          11000 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Eleni Zlotkey
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 175
+Name:            Alyssa Hutton
+E-Mail:          ahutton@oracle.com
+Telefon Nr.:     011.44.1644.429266
+Eingestellt am:  19.03.97
+Gehalt:          8800 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Eleni Zlotkey
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 176
+Name:            Jonathon Taylor
+E-Mail:          jtaylor@oracle.com
+Telefon Nr.:     011.44.1644.429265
+Eingestellt am:  24.03.98
+Gehalt:          8600 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Eleni Zlotkey
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 177
+Name:            Jack Livingston
+E-Mail:          jlivings@oracle.com
+Telefon Nr.:     011.44.1644.429264
+Eingestellt am:  23.04.98
+Gehalt:          8400 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Eleni Zlotkey
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 178
+Name:            Kimberely Grant
+E-Mail:          kgrant@oracle.com
+Telefon Nr.:     011.44.1644.429263
+Eingestellt am:  24.05.99
+Gehalt:          7000 $
+Beruf:           Sales Representative
+Abteilung:       
+Vorgesetzter:    Eleni Zlotkey
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 179
+Name:            Charles Johnson
+E-Mail:          cjohnson@oracle.com
+Telefon Nr.:     011.44.1644.429262
+Eingestellt am:  04.01.00
+Gehalt:          6200 $
+Beruf:           Sales Representative
+Abteilung:       Sales
+Vorgesetzter:    Eleni Zlotkey
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 180
+Name:            Winston Taylor
+E-Mail:          wtaylor@oracle.com
+Telefon Nr.:     650.507.9876
+Eingestellt am:  24.01.98
+Gehalt:          3200 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 181
+Name:            Jean Fleaur
+E-Mail:          jfleaur@oracle.com
+Telefon Nr.:     650.507.9877
+Eingestellt am:  23.02.98
+Gehalt:          3100 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 182
+Name:            Martha Sullivan
+E-Mail:          msulliva@oracle.com
+Telefon Nr.:     650.507.9878
+Eingestellt am:  21.06.99
+Gehalt:          2500 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 183
+Name:            Girard Geoni
+E-Mail:          ggeoni@oracle.com
+Telefon Nr.:     650.507.9879
+Eingestellt am:  03.02.00
+Gehalt:          2800 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Matthew Weiss
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 184
+Name:            Nandita Sarchand
+E-Mail:          nsarchan@oracle.com
+Telefon Nr.:     650.509.1876
+Eingestellt am:  27.01.96
+Gehalt:          4200 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 185
+Name:            Alexis Bull
+E-Mail:          abull@oracle.com
+Telefon Nr.:     650.509.2876
+Eingestellt am:  20.02.97
+Gehalt:          4100 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 186
+Name:            Julia Dellinger
+E-Mail:          jdelling@oracle.com
+Telefon Nr.:     650.509.3876
+Eingestellt am:  24.06.98
+Gehalt:          3400 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 187
+Name:            Anthony Cabrio
+E-Mail:          acabrio@oracle.com
+Telefon Nr.:     650.509.4876
+Eingestellt am:  07.02.99
+Gehalt:          3000 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Adam Fripp
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 188
+Name:            Kelly Chung
+E-Mail:          kchung@oracle.com
+Telefon Nr.:     650.505.1876
+Eingestellt am:  14.06.97
+Gehalt:          3800 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 189
+Name:            Jennifer Dilly
+E-Mail:          jdilly@oracle.com
+Telefon Nr.:     650.505.2876
+Eingestellt am:  13.08.97
+Gehalt:          3600 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 190
+Name:            Timothy Gates
+E-Mail:          tgates@oracle.com
+Telefon Nr.:     650.505.3876
+Eingestellt am:  11.07.98
+Gehalt:          2900 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 191
+Name:            Randall Perkins
+E-Mail:          rperkins@oracle.com
+Telefon Nr.:     650.505.4876
+Eingestellt am:  19.12.99
+Gehalt:          2500 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Payam Kaufling
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 192
+Name:            Sarah Bell
+E-Mail:          sbell@oracle.com
+Telefon Nr.:     650.501.1876
+Eingestellt am:  04.02.96
+Gehalt:          4000 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 193
+Name:            Britney Everett
+E-Mail:          beverett@oracle.com
+Telefon Nr.:     650.501.2876
+Eingestellt am:  03.03.97
+Gehalt:          3900 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 194
+Name:            Samuel McCain
+E-Mail:          smccain@oracle.com
+Telefon Nr.:     650.501.3876
+Eingestellt am:  01.07.98
+Gehalt:          3200 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 195
+Name:            Vance Jones
+E-Mail:          vjones@oracle.com
+Telefon Nr.:     650.501.4876
+Eingestellt am:  17.03.99
+Gehalt:          2800 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Shanta Vollman
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 196
+Name:            Alana Walsh
+E-Mail:          awalsh@oracle.com
+Telefon Nr.:     650.507.9811
+Eingestellt am:  24.04.98
+Gehalt:          3100 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 197
+Name:            Kevin Feeney
+E-Mail:          kfeeney@oracle.com
+Telefon Nr.:     650.507.9822
+Eingestellt am:  23.05.98
+Gehalt:          3000 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 198
+Name:            Donald OConnell
+E-Mail:          doconnel@oracle.com
+Telefon Nr.:     650.507.9833
+Eingestellt am:  21.06.99
+Gehalt:          2600 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 199
+Name:            Douglas Grant
+E-Mail:          dgrant@oracle.com
+Telefon Nr.:     650.507.9844
+Eingestellt am:  13.01.00
+Gehalt:          2600 $
+Beruf:           Shipping Clerk
+Abteilung:       Shipping
+Vorgesetzter:    Kevin Mourgos
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 200
+Name:            Jennifer Whalen
+E-Mail:          jwhalen@oracle.com
+Telefon Nr.:     515.123.4444
+Eingestellt am:  17.09.87
+Gehalt:          4400 $
+Beruf:           Administration Assistant
+Abteilung:       Administration
+Vorgesetzter:    Neena Kochhar
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 201
+Name:            Michael Hartstein
+E-Mail:          mhartste@oracle.com
+Telefon Nr.:     515.123.5555
+Eingestellt am:  17.02.96
+Gehalt:          13000 $
+Beruf:           Marketing Manager
+Abteilung:       Marketing
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 202
+Name:            Pat Fay
+E-Mail:          pfay@oracle.com
+Telefon Nr.:     603.123.6666
+Eingestellt am:  17.08.97
+Gehalt:          6000 $
+Beruf:           Marketing Representative
+Abteilung:       Marketing
+Vorgesetzter:    Michael Hartstein
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 203
+Name:            Susan Mavris
+E-Mail:          smavris@oracle.com
+Telefon Nr.:     515.123.7777
+Eingestellt am:  07.06.94
+Gehalt:          6500 $
+Beruf:           Human Resources Representative
+Abteilung:       Human Resources
+Vorgesetzter:    Neena Kochhar
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 204
+Name:            Hermann Baer
+E-Mail:          hbaer@oracle.com
+Telefon Nr.:     515.123.8888
+Eingestellt am:  07.06.94
+Gehalt:          10000 $
+Beruf:           Public Relations Representative
+Abteilung:       Public Relations
+Vorgesetzter:    Neena Kochhar
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 205
+Name:            Shelley Higgins
+E-Mail:          shiggins@oracle.com
+Telefon Nr.:     515.123.8080
+Eingestellt am:  07.06.94
+Gehalt:          12000 $
+Beruf:           Accounting Manager
+Abteilung:       Accounting
+Vorgesetzter:    Neena Kochhar
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 206
+Name:            William Gietz
+E-Mail:          wgietz@oracle.com
+Telefon Nr.:     515.123.8181
+Eingestellt am:  07.06.94
+Gehalt:          8300 $
+Beruf:           Public Accountant
+Abteilung:       Accounting
+Vorgesetzter:    Shelley Higgins
+____________________________________________________
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- Aufgabe 7d
+SQL> -- Ausgabe von Mitarbeitern in einem bestimmten Bereich
+SQL> -- (von-bis und wahlweise auf- oder absteigend)
+SQL> -- ==========================================================
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE output_employee_set(
+  2      from_employee   IN NUMBER,    -- Start-ID
+  3      to_employee     IN NUMBER,    -- End-ID
+  4      ascending_order IN BOOLEAN    -- TRUE = aufsteigend, FALSE = absteigend
+  5  )
+  6  AS
+  7  
+  8      p_emp employees%ROWTYPE;     -- Variable für Mitarbeiterdaten
+  9  CURSOR c_employees
+ 10  IS
+ 11      -- Cursor für aufsteigende Reihenfolge
+ 12      SELECT *
+ 13      FROM employees
+ 14      WHERE employee_id BETWEEN from_employee AND to_employee
+ 15      ORDER BY employee_id ASC;
+ 16  
+ 17  -- Cursor für absteigende Reihenfolge
+ 18  CURSOR c_employees_desc
+ 19  IS
+ 20      SELECT *
+ 21      FROM employees
+ 22      WHERE employee_id BETWEEN from_employee AND to_employee
+ 23      ORDER BY employee_id DESC;
+ 24  
+ 25  
+ 26  BEGIN
+ 27      IF ascending_order THEN
+ 28      -- Aufsteigende Ausgabe
+ 29      FOR emp_record IN c_employees 
+ 30      LOOP
+ 31          output_employee_b(emp_record);
+ 32      END LOOP;
+ 33      ELSE
+ 34      -- Absteigende Ausgabe
+ 35      FOR emp_record IN c_employees_desc 
+ 36      LOOP
+ 37          output_employee_b(emp_record);
+ 38      END LOOP;
+ 39      END IF;
+ 40  END;
+ 41  /
+
+Procedure OUTPUT_EMPLOYEE_SET compiled
+
+No errors.
+SQL> 
+SQL> -- Aufsteigend
+SQL> BEGIN
+  2      output_employee_set(100, 105, TRUE);
+  3  END;
+  4  /
+____________________________________________________
+Mitarbeiter Nr.: 100
+Name:            Steven King
+E-Mail:          sking@oracle.com
+Telefon Nr.:     515.123.4567
+Eingestellt am:  17.06.87
+Gehalt:          24000 $
+Beruf:           President
+Abteilung:       Executive
+Vorgesetzter:    
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 101
+Name:            Neena Kochhar
+E-Mail:          nkochhar@oracle.com
+Telefon Nr.:     515.123.4568
+Eingestellt am:  21.09.89
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 102
+Name:            Lex De Haan
+E-Mail:          ldehaan@oracle.com
+Telefon Nr.:     515.123.4569
+Eingestellt am:  13.01.93
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 103
+Name:            Alexander Hunold
+E-Mail:          ahunold@oracle.com
+Telefon Nr.:     590.423.4567
+Eingestellt am:  03.01.90
+Gehalt:          9000 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Lex De Haan
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 104
+Name:            Bruce Ernst
+E-Mail:          bernst@oracle.com
+Telefon Nr.:     590.423.4568
+Eingestellt am:  21.05.91
+Gehalt:          6000 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 105
+Name:            David Austin
+E-Mail:          daustin@oracle.com
+Telefon Nr.:     590.423.4569
+Eingestellt am:  25.06.97
+Gehalt:          4800 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Absteigend
+SQL> BEGIN
+  2      output_employee_set(100, 105, FALSE);
+  3  END;
+  4  /
+____________________________________________________
+Mitarbeiter Nr.: 105
+Name:            David Austin
+E-Mail:          daustin@oracle.com
+Telefon Nr.:     590.423.4569
+Eingestellt am:  25.06.97
+Gehalt:          4800 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 104
+Name:            Bruce Ernst
+E-Mail:          bernst@oracle.com
+Telefon Nr.:     590.423.4568
+Eingestellt am:  21.05.91
+Gehalt:          6000 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Alexander Hunold
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 103
+Name:            Alexander Hunold
+E-Mail:          ahunold@oracle.com
+Telefon Nr.:     590.423.4567
+Eingestellt am:  03.01.90
+Gehalt:          9000 $
+Beruf:           Programmer
+Abteilung:       IT
+Vorgesetzter:    Lex De Haan
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 102
+Name:            Lex De Haan
+E-Mail:          ldehaan@oracle.com
+Telefon Nr.:     515.123.4569
+Eingestellt am:  13.01.93
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 101
+Name:            Neena Kochhar
+E-Mail:          nkochhar@oracle.com
+Telefon Nr.:     515.123.4568
+Eingestellt am:  21.09.89
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+____________________________________________________
+Mitarbeiter Nr.: 100
+Name:            Steven King
+E-Mail:          sking@oracle.com
+Telefon Nr.:     515.123.4567
+Eingestellt am:  17.06.87
+Gehalt:          24000 $
+Beruf:           President
+Abteilung:       Executive
+Vorgesetzter:    
+____________________________________________________
+
+
+PL/SQL procedure successfully completed.
+
+SQL> -- ==========================================================
+SQL> -- Aufgabe 8
+SQL> -- Ausgabe eines Mitarbeiters nach Nachnamen + Exception Handling
+SQL> -- ==========================================================
+SQL> CREATE OR REPLACE PROCEDURE output_employee_by_name(p_last_name IN employees.last_name%TYPE)
+  2  AS
+  3  p_emp employees%ROWTYPE;
+  4      v_job_title jobs.job_title%TYPE;
+  5      v_department_name departments.department_name%TYPE;
+  6      v_manager_name VARCHAR2(100);
+  7  BEGIN
+  8      -- Mitarbeiter-Daten anhand Nachname holen
+  9      SELECT *
+ 10      INTO p_emp
+ 11      FROM employees
+ 12      WHERE UPPER(last_name) = UPPER(p_last_name);
+ 13  
+ 14  
+ 15      IF p_emp.department_id IS NOT NULL THEN
+ 16          SELECT department_name
+ 17          INTO v_department_name
+ 18          FROM departments
+ 19          WHERE department_id = p_emp.department_id;
+ 20      END IF;
+ 21  
+ 22  
+ 23      SELECT job_title
+ 24      INTO v_job_title
+ 25      FROM jobs
+ 26      WHERE job_id = p_emp.job_id;
+ 27  
+ 28  
+ 29      IF p_emp.manager_id IS NOT NULL THEN
+ 30          SELECT first_name || ' ' || last_name
+ 31          INTO v_manager_name
+ 32          FROM employees
+ 33          WHERE employee_id = p_emp.manager_id;
+ 34      END IF;
+ 35  
+ 36      -- Ausgabe des formatierten Mitarbeiterprofils
+ 37      DBMS_OUTPUT.PUT_LINE('____________________________________________________');
+ 38      DBMS_OUTPUT.PUT_LINE('Mitarbeiter Nr.: ' || p_emp.employee_id);
+ 39      DBMS_OUTPUT.PUT_LINE('Name:            ' || p_emp.first_name || ' ' || p_emp.last_name);
+ 40      DBMS_OUTPUT.PUT_LINE('E-Mail:          ' || LOWER(p_emp.email) || '@oracle.com');
+ 41      DBMS_OUTPUT.PUT_LINE('Telefon Nr.:     ' || p_emp.phone_number);
+ 42      DBMS_OUTPUT.PUT_LINE('Eingestellt am:  ' || TO_CHAR(p_emp.hire_date, 'DD.MM.YY'));
+ 43      DBMS_OUTPUT.PUT_LINE('Gehalt:          ' || p_emp.salary || ' $');
+ 44      DBMS_OUTPUT.PUT_LINE('Beruf:           ' || v_job_title);
+ 45      DBMS_OUTPUT.PUT_LINE('Abteilung:       ' || v_department_name);
+ 46      DBMS_OUTPUT.PUT_LINE('Vorgesetzter:    ' || v_manager_name);
+ 47      DBMS_OUTPUT.PUT_LINE('____________________________________________________');
+ 48  
+ 49  -- ==========================================================
+ 50  -- Exception Handling
+ 51  -- ==========================================================
+ 52  EXCEPTION
+ 53      WHEN NO_DATA_FOUND THEN
+ 54          DBMS_OUTPUT.PUT_LINE('Kein Mitarbeiter mit Nachnamen "' || p_last_name || '" gefunden.');
+ 55      WHEN TOO_MANY_ROWS THEN
+ 56          DBMS_OUTPUT.PUT_LINE('Mehrere Mitarbeiter mit Nachnamen "' || p_last_name || '" gefunden.');
+ 57          DBMS_OUTPUT.PUT_LINE('Bitte spezifischeren Namen angeben.');
+ 58      WHEN OTHERS THEN
+ 59          DBMS_OUTPUT.PUT_LINE('Fehler');
+ 60  END;
+ 61  /
+
+Procedure OUTPUT_EMPLOYEE_BY_NAME compiled
+
+No errors.
+SQL> 
+SQL> -- 1. Eindeutiger Name (funktioniert)
+SQL> BEGIN
+  2      output_employee_by_name('Kochhar');
+  3  END;
+  4  /
+____________________________________________________
+Mitarbeiter Nr.: 101
+Name:            Neena Kochhar
+E-Mail:          nkochhar@oracle.com
+Telefon Nr.:     515.123.4568
+Eingestellt am:  21.09.89
+Gehalt:          17000 $
+Beruf:           Administration Vice President
+Abteilung:       Executive
+Vorgesetzter:    Steven King
+____________________________________________________
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- 2. Kein Treffer (NO_DATA_FOUND)
+SQL> BEGIN
+  2      output_employee_by_name('Unbekannt');
+  3  END;
+  4  /
+Kein Mitarbeiter mit Nachnamen "Unbekannt" gefunden.
+
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- 3. Mehrere Treffer (TOO_MANY_ROWS)
+SQL> BEGIN
+  2      output_employee_by_name('Smith');  -- falls mehrfach vorhanden
+  3  END;
+  4  /
+Mehrere Mitarbeiter mit Nachnamen "Smith" gefunden.
+Bitte spezifischeren Namen angeben.
+
+
+PL/SQL procedure successfully completed.
+
+SQL> SPOOl OFF;
