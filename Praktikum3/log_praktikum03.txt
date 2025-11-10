@@ -1,0 +1,316 @@
+SQL> 
+SQL> -- ==========================================================
+SQL> -- [SETUP] Alte Tabellen löschen (erst abhängige, dann Eltern)
+SQL> -- ==========================================================
+SQL> DROP TABLE Katalog_Artikel;
+
+Table KATALOG_ARTIKEL dropped.
+
+SQL> DROP TABLE Bilder;
+
+Table BILDER dropped.
+
+SQL> DROP TABLE Haushaltswaren;
+
+Table HAUSHALTSWAREN dropped.
+
+SQL> DROP TABLE Lebensmittel;
+
+Table LEBENSMITTEL dropped.
+
+SQL> DROP TABLE Artikel;
+
+Table ARTIKEL dropped.
+
+SQL> DROP TABLE Katalog;
+
+Table KATALOG dropped.
+
+SQL> DROP TABLE Lieferservice;
+
+Table LIEFERSERVICE dropped.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- [Aufgabe 1b] Tabellen anlegen
+SQL> -- ==========================================================
+SQL> 
+SQL> -- Lieferservice (Eltern von Katalog)
+SQL> CREATE TABLE Lieferservice (
+  2      lieferservice_id   NUMBER(10) PRIMARY KEY,
+  3      lieferservice_name VARCHAR2(100)
+  4  );
+
+Table LIEFERSERVICE created.
+
+SQL> 
+SQL> -- Kataloge (1:N zu Lieferservice)
+SQL> CREATE TABLE Katalog (
+  2      katalog_id        NUMBER(10) PRIMARY KEY,
+  3      katalog_name      VARCHAR2(100),
+  4      lieferservice_id  NUMBER(10)
+  5  );
+
+Table KATALOG created.
+
+SQL> 
+SQL> -- Artikel (Oberklasse)
+SQL> CREATE TABLE Artikel (
+  2      artikel_nr    NUMBER(10) PRIMARY KEY,
+  3      artikel_name  VARCHAR2(100),
+  4      preis         NUMBER(10),          -- Tipp: NUMBER(10,2) wäre für Geld üblicher
+  5      beschreibung  VARCHAR2(200)
+  6  );
+
+Table ARTIKEL created.
+
+SQL> 
+SQL> -- Haushaltswaren (Unterklasse von Artikel) — 1:1 via PK=FK
+SQL> CREATE TABLE Haushaltswaren (
+  2      artikel_nr NUMBER(10) PRIMARY KEY,
+  3      garantie   NUMBER(10),
+  4      farbe      VARCHAR2(50)
+  5  );
+
+Table HAUSHALTSWAREN created.
+
+SQL> 
+SQL> -- Lebensmittel (Unterklasse von Artikel) — 1:1 via PK=FK
+SQL> CREATE TABLE Lebensmittel (
+  2      artikel_nr       NUMBER(10) PRIMARY KEY,
+  3      gewicht          NUMBER(10),
+  4      zusammensetzung  VARCHAR2(200)
+  5  );
+
+Table LEBENSMITTEL created.
+
+SQL> 
+SQL> -- Bilder (1:N zu Artikel)
+SQL> CREATE TABLE Bilder (
+  2      bild_id     NUMBER(10) PRIMARY KEY,
+  3      artikel_nr  NUMBER(10),
+  4      url         VARCHAR2(200),
+  5      alt_text    VARCHAR2(100)
+  6  );
+
+Table BILDER created.
+
+SQL> 
+SQL> -- Verbindungstabelle (N:M zwischen Katalog und Artikel)
+SQL> CREATE TABLE Katalog_Artikel (
+  2      artikel_nr  NUMBER(10) NOT NULL REFERENCES Artikel(artikel_nr),
+  3      katalog_id  NUMBER(10) NOT NULL REFERENCES Katalog(katalog_id),
+  4      CONSTRAINT katalog_artikel_pk PRIMARY KEY (artikel_nr, katalog_id)
+  5  );
+
+Table KATALOG_ARTIKEL created.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- [Aufgabe 1b] Fremdschlüsselbeziehungen ergänzen
+SQL> -- ==========================================================
+SQL> 
+SQL> -- Katalog → Lieferservice (1:N)
+SQL> ALTER TABLE Katalog
+  2      ADD CONSTRAINT katalog_lieferservice_fk
+  3      FOREIGN KEY (lieferservice_id)
+  4      REFERENCES Lieferservice(lieferservice_id);
+
+Table KATALOG altered.
+
+SQL> 
+SQL> -- Haushaltswaren → Artikel (1:1; PK = FK)
+SQL> ALTER TABLE Haushaltswaren 
+  2      ADD CONSTRAINT haushaltswaren_artikel_fk 
+  3      FOREIGN KEY (artikel_nr) 
+  4      REFERENCES Artikel(artikel_nr);
+
+Table HAUSHALTSWAREN altered.
+
+SQL> 
+SQL> -- Lebensmittel → Artikel (1:1; PK = FK)
+SQL> ALTER TABLE Lebensmittel 
+  2      ADD CONSTRAINT lebensmittel_artikel_fk 
+  3      FOREIGN KEY (artikel_nr) 
+  4      REFERENCES Artikel(artikel_nr);
+
+Table LEBENSMITTEL altered.
+
+SQL> 
+SQL> -- Bilder → Artikel (1:N)
+SQL> ALTER TABLE Bilder 
+  2      ADD CONSTRAINT bilder_artikel_fk
+  3      FOREIGN KEY (artikel_nr)
+  4      REFERENCES Artikel(artikel_nr);
+
+Table BILDER altered.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- [Aufgabe 2a] Daten aus Tabelle einfügen
+SQL> -- ==========================================================
+SQL> 
+SQL> INSERT INTO Lieferservice VALUES (1, 'DailyMarket');
+
+1 row inserted.
+
+SQL> 
+SQL> -- Kataloge (Alltagsprodukte, Küchenausstattung, Sonderangebote)
+SQL> INSERT INTO Katalog VALUES (1, 'Alltagsprodukte', 1);
+
+1 row inserted.
+
+SQL> INSERT INTO Katalog VALUES (2, 'Küchenausstattung', 1);
+
+1 row inserted.
+
+SQL> INSERT INTO Katalog VALUES (3, 'Sonderangebote', 1);
+
+1 row inserted.
+
+SQL> 
+SQL> -- Artikel: Brot
+SQL> INSERT INTO artikel VALUES (1, 'Brot', 2.99, 'Gesundes Brot');
+
+1 row inserted.
+
+SQL> INSERT INTO lebensmittel VALUES (1, 1000, 'Vollkorn');
+
+1 row inserted.
+
+SQL> INSERT INTO KATALOG_ARTIKEL VALUES (1, 1);
+
+1 row inserted.
+
+SQL> 
+SQL> 
+SQL> -- Artikel: Butter
+SQL> INSERT INTO artikel VALUES (2, 'Butter', 0.99, 'Natuerlich hergestellt');
+
+1 row inserted.
+
+SQL> INSERT INTO lebensmittel VALUES (2, 250, 'Milch');
+
+1 row inserted.
+
+SQL> INSERT INTO KATALOG_ARTIKEL VALUES (2, 1);
+
+1 row inserted.
+
+SQL> INSERT INTO KATALOG_ARTIKEL VALUES (2, 3);
+
+1 row inserted.
+
+SQL> 
+SQL> -- Artikel: Messer
+SQL> INSERT INTO artikel VALUES (3, 'Messer', 4.99, 'Aus Edelstahl');
+
+1 row inserted.
+
+SQL> INSERT INTO haushaltswaren VALUES (3, 5, 'Silber');
+
+1 row inserted.
+
+SQL> INSERT INTO KATALOG_ARTIKEL VALUES (3, 2);
+
+1 row inserted.
+
+SQL> 
+SQL> -- Artikel: Brettchen
+SQL> INSERT INTO artikel VALUES (4, 'Brettchen', 3.99, 'Aus Holz');
+
+1 row inserted.
+
+SQL> INSERT INTO haushaltswaren VALUES (4, 2, 'Braun');
+
+1 row inserted.
+
+SQL> INSERT INTO KATALOG_ARTIKEL VALUES (4, 2);
+
+1 row inserted.
+
+SQL> 
+SQL> -- Artikel: Teller
+SQL> INSERT INTO artikel VALUES (5, 'Teller', 7.99, 'Aus Keramik');
+
+1 row inserted.
+
+SQL> INSERT INTO haushaltswaren VALUES (5, NULL, 'Blau');
+
+1 row inserted.
+
+SQL> INSERT INTO KATALOG_ARTIKEL VALUES (5, 2);
+
+1 row inserted.
+
+SQL> INSERT INTO KATALOG_ARTIKEL VALUES (5, 3);
+
+1 row inserted.
+
+SQL> 
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> 
+SQL> -- ==========================================================
+SQL> -- [Aufgabe 2b] Relationen ausgeben
+SQL> -- ==========================================================
+SQL> 
+SQL> SELECT * FROM Lieferservice;
+
+LIEFERSERVICE_ID LIEFERSERVICE_NAME                                                                                  
+---------------- ----------------------------------------------------------------------------------------------------
+               1 DailyMarket                                                                                         
+
+SQL> SELECT * FROM Katalog;
+
+KATALOG_ID KATALOG_NAME                                                                                         LIEFERSERVICE_ID
+---------- ---------------------------------------------------------------------------------------------------- ----------------
+         1 Alltagsprodukte                                                                                                     1
+         2 Küchenausstattung                                                                                                   1
+         3 Sonderangebote                                                                                                      1
+
+SQL> SELECT * FROM Artikel;
+
+ARTIKEL_NR ARTIKEL_NAME                                                                                              PREIS BESCHREIBUNG                                                                                                                                                                                            
+---------- ---------------------------------------------------------------------------------------------------- ---------- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         1 Brot                                                                                                          3 Gesundes Brot                                                                                                                                                                                           
+         2 Butter                                                                                                        1 Natuerlich hergestellt                                                                                                                                                                                  
+         3 Messer                                                                                                        5 Aus Edelstahl                                                                                                                                                                                           
+         4 Brettchen                                                                                                     4 Aus Holz                                                                                                                                                                                                
+         5 Teller                                                                                                        8 Aus Keramik                                                                                                                                                                                             
+
+SQL> SELECT * FROM Lebensmittel;
+
+ARTIKEL_NR    GEWICHT ZUSAMMENSETZUNG                                                                                                                                                                                         
+---------- ---------- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         1       1000 Vollkorn                                                                                                                                                                                                
+         2        250 Milch                                                                                                                                                                                                   
+
+SQL> SELECT * FROM Haushaltswaren;
+
+ARTIKEL_NR   GARANTIE FARBE                                             
+---------- ---------- --------------------------------------------------
+         3          5 Silber                                            
+         4          2 Braun                                             
+         5            Blau                                              
+
+SQL> SELECT * FROM Bilder;
+no rows selected
+SQL> SELECT * FROM Katalog_Artikel;
+
+ARTIKEL_NR KATALOG_ID
+---------- ----------
+         1          1
+         2          1
+         2          3
+         3          2
+         4          2
+         5          2
+         5          3
+
+7 rows selected. 
+
+SQL> 
+SQL> SPOOL OFF
