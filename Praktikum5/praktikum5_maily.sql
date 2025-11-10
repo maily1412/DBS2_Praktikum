@@ -64,18 +64,45 @@ END;
 /
 
 -- Splitten von Texten 
-WITH rws AS (
-    SELECT data AS str
+DECLARE
+    v_str VARCHAR2(4000);
+BEGIN
+    -- CSV-String aus Tabelle laden
+    SELECT data
+    INTO v_str
     FROM user001.webservice_loads
-    WHERE id = 2
-)
-SELECT REGEXP_SUBSTR(
-        str,
-        '[^,]+',
-        1,
-        LEVEL
-    ) AS stadtname
-FROM rws
-CONNECT BY LEVEL <=
-LENGTH(str) - LENGTH(REPLACE(str, ',')) + 1;
+    WHERE id = 2;
+
+    DBMS_OUTPUT.PUT_LINE('Geladene Daten: ' || v_str);
+
+    -- Split-Logik aus Oracle-Blog (REGEXP_SUBSTR + CONNECT BY)
+    FOR rec IN (
+        WITH rws AS (
+            SELECT v_str AS str FROM dual
+        )
+    SELECT REGEXP_SUBSTR(
+                str,
+                '[^,]+',
+                1,
+                LEVEL
+            ) AS value
+    FROM rws
+    CONNECT BY LEVEL <= LENGTH(str) - LENGTH(REPLACE(str, ',')) + 1
+    )
+    LOOP
+    -- Ergebnis in STAEDTE einfügen
+    INSERT INTO staedte (stadtname, breitengrad, laengengrad)
+    VALUES (TRIM(rec.value), NULL, NULL);
+
+    DBMS_OUTPUT.PUT_LINE('Eingefügt: ' || TRIM(rec.value));
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE('Alle Städte erfolgreich eingefügt.');
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Kein Datensatz mit ID=2 gefunden.');
+    WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Fehler: ' || SQLERRM);
+END;
+/
 
