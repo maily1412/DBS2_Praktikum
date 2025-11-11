@@ -15,8 +15,8 @@ SQL> -- ==========================================================
 SQL> 
 SQL> -- Einheiten: 
 SQL> -- Stadtname: Text (VARCHAR2)
-SQL> -- Breitengrad: Dezimalgrad (NUMBER) - Latitude in Grad
-SQL> -- Längengrad: Dezimalgrad (NUMBER) - Longitude in Grad
+SQL> -- Breitengrad: Dezimalgrad (NUMBER)
+SQL> -- Längengrad: Dezimalgrad (NUMBER) 
 SQL> 
 SQL> CREATE TABLE Staedte (
   2      Stadtname VARCHAR(50) PRIMARY KEY,      -- Name der Stadt
@@ -221,7 +221,7 @@ SQL> CREATE OR REPLACE FUNCTION abstand (a staedte%ROWTYPE, b staedte%ROWTYPE)
   4      dist_y NUMBER(10,5);        -- Nord-Süd-Distanz
   5      dist_x NUMBER(10,5);        -- Ost-West-Distanz
   6      rad CONSTANT NUMBER := ACOS(-1) / 180; -- Grad --> Radiant-Umrechnungsfaktor
-  7      erdradius CONSTANT NUMBER := 6371;     -- Erdradius in km
+  7      erdradius CONSTANT NUMBER := 6378.137; -- Erdradius in km
   8      distanz NUMBER(10,2);
   9  BEGIN
  10   -- Längengrad-Differenz, korrigiert um den Cosinus des mittleren Breitengrads zu ermitteln
@@ -257,7 +257,7 @@ SQL> DECLARE
  13      DBMS_OUTPUT.PUT_LINE('Entfernung zwischen Düsseldorf und Köln: ' ||  entfernung || ' km');
  14  END;
  15  /
-Entfernung zwischen Düsseldorf und Köln: 35,41 km
+Entfernung zwischen Düsseldorf und Köln: 35,45 km
 
 
 PL/SQL procedure successfully completed.
@@ -265,8 +265,8 @@ PL/SQL procedure successfully completed.
 SQL> 
 SQL> -- ==========================================================
 SQL> -- Aufgabe 1d
-SQL> -- Prozedur: Entfernungstabelle (nutzt meine ROWTYPE-Funktion abstand)
-SQL> -- ==========================================================
+SQL> -- Prozedur: Entfernungstabelle 
+SQL> -- ================================================================================================
 SQL> CREATE OR REPLACE PROCEDURE entfernungs_tabelle AS
   2  BEGIN
   3    -- Überschrift: 2-Buchstaben-Kürzel je Stadt
@@ -295,23 +295,28 @@ SQL>
 SQL> -- Test: Entfernungstabelle ausgeben
 SQL> EXECUTE entfernungs_tabelle();
 -                          Aa        Bo        Du        Dü        Es        Kr        Kö        Le        Mö        Mü        Ob        Re        So        Wu
-Aachen                    0.00     71.97     85.94     70.02     99.28     70.09     63.31     68.96     51.47     91.34     94.48     90.14     82.36     96.57
-Bonn                     71.97      0.00     80.11     59.94     80.26     76.32     24.61     34.40     67.65     79.34     83.84     50.53     48.95     60.63
-Duisburg                 85.94     80.11      0.00     21.14     17.65     17.11     55.91     45.77     34.74      7.71      8.89     40.07     35.18     35.43
-Düsseldorf               70.02     59.94     21.14      0.00     29.60     18.36     35.41     26.26     23.65     23.30     27.41     29.78     21.94     30.95
-Essen                    99.28     80.26     17.65     29.60      0.00     33.96     58.03     46.78     49.71      9.96     10.63     32.52     31.41     24.36
-Krefeld                  70.09     76.32     17.11     18.36     33.96      0.00     51.78     43.93     18.65     24.22     25.99     46.91     39.70     45.68
-Köln                     63.31     24.61     55.91     35.41     58.03     51.78      0.00     11.32     44.66     55.81     60.30     32.83     28.19     42.25
-Leverkusen               68.96     34.40     45.77     26.26     46.78     43.93     11.32      0.00     40.59     45.02     49.52     22.67     17.06     31.50
-Mönchengladbach          51.47     67.65     34.74     23.65     49.71     18.65     44.66     40.59      0.00     40.82     43.49     52.28     43.93     54.55
-Mülheim an der Ruhr      91.34     79.34      7.71     23.30      9.96     24.22     55.81     45.02     40.82      0.00      4.50     35.60     32.08     29.56
-Oberhausen               94.48     83.84      8.89     27.41     10.63     25.99     60.30     49.52     43.49      4.50      0.00     39.57     36.41     32.94
-Remscheid                90.14     50.53     40.07     29.78     32.52     46.91     32.83     22.67     52.28     35.60     39.57      0.00      8.44     10.10
-Solingen                 82.36     48.95     35.18     21.94     31.41     39.70     28.19     17.06     43.93     32.08     36.41      8.44      0.00     14.79
-Wuppertal                96.57     60.63     35.43     30.95     24.36     45.68     42.25     31.50     54.55     29.56     32.94     10.10     14.79      0.00
+Aachen                    0.00     72.05     86.04     70.10     99.39     70.17     63.38     69.04     51.53     91.45     94.58     90.25     82.45     96.68
+Bonn                     72.05      0.00     80.20     60.01     80.34     76.41     24.64     34.44     67.73     79.43     83.93     50.58     49.00     60.70
+Duisburg                 86.04     80.20      0.00     21.16     17.67     17.13     55.97     45.82     34.78      7.72      8.90     40.12     35.22     35.47
+Düsseldorf               70.10     60.01     21.16      0.00     29.64     18.38     35.45     26.28     23.68     23.33     27.44     29.82     21.97     30.98
+Essen                    99.39     80.34     17.67     29.64      0.00     33.99     58.09     46.84     49.76      9.97     10.64     32.56     31.45     24.39
+Krefeld                  70.17     76.41     17.13     18.38     33.99      0.00     51.84     43.98     18.67     24.25     26.02     46.96     39.75     45.73
+Köln                     63.38     24.64     55.97     35.45     58.09     51.84      0.00     11.33     44.71     55.87     60.37     32.87     28.22     42.29
+Leverkusen               69.04     34.44     45.82     26.28     46.84     43.98     11.33      0.00     40.63     45.07     49.58     22.70     17.08     31.54
+Mönchengladbach          51.53     67.73     34.78     23.68     49.76     18.67     44.71     40.63      0.00     40.87     43.54     52.34     43.98     54.61
+Mülheim an der Ruhr      91.45     79.43      7.72     23.33      9.97     24.25     55.87     45.07     40.87      0.00      4.51     35.64     32.12     29.60
+Oberhausen               94.58     83.93      8.90     27.44     10.64     26.02     60.37     49.58     43.54      4.51      0.00     39.61     36.45     32.97
+Remscheid                90.25     50.58     40.12     29.82     32.56     46.96     32.87     22.70     52.34     35.64     39.61      0.00      8.45     10.12
+Solingen                 82.45     49.00     35.22     21.97     31.45     39.75     28.22     17.08     43.98     32.12     36.45      8.45      0.00     14.81
+Wuppertal                96.68     60.70     35.47     30.98     24.39     45.73     42.29     31.54     54.61     29.60     32.97     10.12     14.81      0.00
 
 
 PL/SQL procedure successfully completed.
 
+SQL> -- ==========================================================
+SQL> -- Praktikum 5
+SQL> -- ==========================================================
 SQL> 
-SQL> SPool OFF;
+SQL> Set SERVEROUTPUT ON;
+SQL> Set Echo ON;
+SQL> SPOOl Praktikum5_Dani.log;

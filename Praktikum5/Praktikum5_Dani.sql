@@ -18,8 +18,8 @@ DROP TABLE Staedte CASCADE CONSTRAINTS;
 
 -- Einheiten: 
 -- Stadtname: Text (VARCHAR2)
--- Breitengrad: Dezimalgrad (NUMBER) - Latitude in Grad
--- Längengrad: Dezimalgrad (NUMBER) - Longitude in Grad
+-- Breitengrad: Dezimalgrad (NUMBER)
+-- Längengrad: Dezimalgrad (NUMBER) 
 
 CREATE TABLE Staedte (
     Stadtname VARCHAR(50) PRIMARY KEY,      -- Name der Stadt
@@ -118,7 +118,7 @@ AS
     dist_y NUMBER(10,5);        -- Nord-Süd-Distanz
     dist_x NUMBER(10,5);        -- Ost-West-Distanz
     rad CONSTANT NUMBER := ACOS(-1) / 180; -- Grad --> Radiant-Umrechnungsfaktor
-    erdradius CONSTANT NUMBER := 6371;     -- Erdradius in km
+    erdradius CONSTANT NUMBER := 6378.137; -- Erdradius in km
     distanz NUMBER(10,2);
 BEGIN
  -- Längengrad-Differenz, korrigiert um den Cosinus des mittleren Breitengrads zu ermitteln
