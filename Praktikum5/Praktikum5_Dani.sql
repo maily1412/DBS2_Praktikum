@@ -54,7 +54,7 @@ CONNECT BY LEVEL <= LENGTH(TRIM(BOTH '.' FROM str)) - LENGTH(REPLACE(str, '.')) 
 
 -- Der CONNECT BY-Teil sorgt dafür, dass jede Zeile bis zum nächsten Punkt extrahiert wird.
 
--- Schauen ab welcher Position die Werte beginnne
+-- Schauen ab welcher Position die Werte beginnen
 DECLARE
   line VARCHAR2(4000);
 BEGIN 
