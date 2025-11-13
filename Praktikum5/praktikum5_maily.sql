@@ -210,4 +210,59 @@ BEGIN
 END;
 /
 
+
+-- ==========================================================
 -- Aufgabe 1d)
+-- ==========================================================
+--In diesem Package existiert eine Prozedur
+CREATE OR REPLACE PACKAGE entfernung_pkg AS
+    PROCEDURE entfernungs_tabelle;
+END entfernung_pkg;
+/
+
+CREATE OR REPLACE PACKAGE BODY entfernung_pkg AS
+
+    PROCEDURE entfernungs_tabelle AS
+    BEGIN
+        -- Ausgabe „Stadt“ linksbündig und auf 20 Zeichen aufgefüllt
+        DBMS_OUTPUT.PUT(RPAD('Stadt', 20));  -- Erste Spalte
+
+        -- Schleife über alle Städte alphabetisch sortiert -> erzeugt Spaltenkopf
+        FOR stadt IN (SELECT Stadtname FROM Staedte ORDER BY Stadtname) LOOP
+            DBMS_OUTPUT.PUT(
+                --nimmt die ersten 2 Buchstaben jeder Stadt und macht daraus einen 10-Zeichen breiten rechten Block
+                LPAD(SUBSTR(stadt.Stadtname, 1, 2), 10)
+            );
+        END LOOP;
+
+        -- neue Ausgabezeile beginnen
+        DBMS_OUTPUT.NEW_LINE;
+
+        -- Jede Zeile = Ausgangsstadt
+        FOR stadt IN (SELECT Stadtname FROM Staedte ORDER BY Stadtname) LOOP
+
+            -- Linke Spalte: voller Name
+            DBMS_OUTPUT.PUT(RPAD(stadt.Stadtname, 20));
+
+            -- Für die aktuelle Ausgangsstadt wird jede mögliche Zielstadt durchgegangen
+            FOR ziel IN (SELECT Stadtname FROM Staedte ORDER BY Stadtname) LOOP
+                -- Abstand zwischen zwei Städten berechnen
+                DBMS_OUTPUT.PUT(
+                    LPAD(
+                        TO_CHAR(abstand(stadt.Stadtname, ziel.Stadtname), 'FM999990.00'),
+                        10
+                    )
+                );
+            END LOOP;
+
+            -- neue Ausgabezeile beginnen
+            DBMS_OUTPUT.NEW_LINE;
+
+        END LOOP;
+    END entfernungs_tabelle;
+
+END entfernung_pkg;
+/
+
+-- Testen
+EXEC entfernung_pkg.entfernungs_tabelle;
