@@ -1,4 +1,8 @@
-DROP TABLE staedte;
+Set SERVEROUTPUT ON;
+Set Echo ON;
+SPOOL praktikum5_Maily.log;
+
+DROP TABLE staedte CASCADE CONSTRAINTS;
 
 -- ==========================================================
 -- Aufgabe 1a)
@@ -266,3 +270,6 @@ END entfernung_pkg;
 
 -- Testen
 EXEC entfernung_pkg.entfernungs_tabelle;
+
+
+SPOOl OFF;
